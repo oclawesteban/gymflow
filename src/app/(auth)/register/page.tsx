@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { registerUser } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +11,7 @@ import { Dumbbell, Loader2, Lock, Mail, User, Building2 } from "lucide-react"
 import Link from "next/link"
 
 export default function RegisterPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -28,11 +30,31 @@ export default function RegisterPage() {
         password: data.get("password") as string,
         gymName: data.get("gymName") as string,
       })
-      if (result?.error) setError(result.error)
-    } catch {
-      // redirects on success
-    } finally {
-      setLoading(false)
+
+      if (result?.error) {
+        setError(result.error)
+        setLoading(false)
+        return
+      }
+
+      // Si la server action retornó un redirectTo explícito (fallback)
+      if (result?.redirectTo) {
+        router.push(result.redirectTo)
+        return
+      }
+
+      // Éxito normal — el redirect lo maneja Next.js vía NEXT_REDIRECT
+    } catch (err: any) {
+      // NEXT_REDIRECT no llega aquí en Next.js 14 (lo intercepta el framework)
+      // Si llega cualquier otro error, mostrarlo
+      const isRedirect =
+        err?.message?.includes("NEXT_REDIRECT") ||
+        err?.digest?.includes("NEXT_REDIRECT")
+
+      if (!isRedirect) {
+        setError("Ocurrió un error al crear la cuenta. Intenta de nuevo.")
+        setLoading(false)
+      }
     }
   }
 

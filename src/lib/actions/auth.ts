@@ -24,7 +24,7 @@ export async function registerUser(data: {
   const existingCode = await prisma.gym.findUnique({ where: { gymCode } })
   if (existingCode) gymCode = generateRandomCode()
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       name: data.name,
       email: data.email,
@@ -38,13 +38,23 @@ export async function registerUser(data: {
     },
   })
 
-  await signIn("credentials", {
-    email: data.email,
-    password: data.password,
-    redirectTo: "/dashboard",
-  })
+  try {
+    await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirectTo: "/dashboard",
+    })
+  } catch (error: any) {
+    // NextAuth v5: login exitoso lanza NEXT_REDIRECT — hay que re-lanzarlo
+    const isRedirect =
+      error?.message?.includes("NEXT_REDIRECT") ||
+      error?.digest?.includes("NEXT_REDIRECT")
+    if (isRedirect) throw error
+    // Si signIn falla por otro motivo, igual la cuenta ya fue creada — ir al login
+    return { success: true, redirectTo: "/login" }
+  }
 
-  return { success: true, userId: user.id }
+  return { success: true }
 }
 
 export async function loginUser(data: { email: string; password: string }) {
