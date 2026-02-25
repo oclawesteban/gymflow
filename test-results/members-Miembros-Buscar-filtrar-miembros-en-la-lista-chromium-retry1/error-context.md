@@ -1,0 +1,245 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6]
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: GymFlow
+          - paragraph [ref=e14]: Gestión de Gimnasio
+      - navigation [ref=e15]:
+        - link "Inicio" [ref=e16] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e17]
+          - generic [ref=e22]: Inicio
+        - link "Miembros" [ref=e23] [cursor=pointer]:
+          - /url: /members
+          - img [ref=e24]
+          - generic [ref=e29]: Miembros
+        - link "Planes" [ref=e30] [cursor=pointer]:
+          - /url: /plans
+          - img [ref=e31]
+          - generic [ref=e34]: Planes
+        - link "Membresías" [ref=e35] [cursor=pointer]:
+          - /url: /memberships
+          - img [ref=e36]
+          - generic [ref=e38]: Membresías
+        - link "Pagos" [ref=e39] [cursor=pointer]:
+          - /url: /payments
+          - img [ref=e40]
+          - generic [ref=e42]: Pagos
+        - link "Asistencia" [ref=e43] [cursor=pointer]:
+          - /url: /attendance
+          - img [ref=e44]
+          - generic [ref=e46]: Asistencia
+      - button "Cerrar sesión" [ref=e48]:
+        - img
+        - text: Cerrar sesión
+    - main [ref=e49]:
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - heading "Miembros" [level=1] [ref=e54]
+            - paragraph [ref=e55]: Gestiona los miembros de tu gimnasio
+          - link "Nuevo Miembro" [ref=e56] [cursor=pointer]:
+            - /url: /members/new
+            - button "Nuevo Miembro" [ref=e57]:
+              - img
+              - generic [ref=e58]: Nuevo Miembro
+        - generic [ref=e59]:
+          - 'link "A Andrés Torres Ríos Activa 3223456789 andres.torres@gmail.com Plan: Plan Mensual · Vence: 2 de marzo, 2026" [ref=e60] [cursor=pointer]':
+            - /url: /members/cmm1bzki8000hfzechmb5bqpf
+            - generic [ref=e63]:
+              - generic [ref=e64]: A
+              - generic [ref=e65]:
+                - generic [ref=e66]:
+                  - heading "Andrés Torres Ríos" [level=3] [ref=e67]
+                  - generic [ref=e68]: Activa
+                - generic [ref=e69]:
+                  - img [ref=e70]
+                  - generic [ref=e72]: "3223456789"
+                - generic [ref=e73]:
+                  - img [ref=e74]
+                  - generic [ref=e77]: andres.torres@gmail.com
+                - paragraph [ref=e78]: "Plan: Plan Mensual · Vence: 2 de marzo, 2026"
+          - 'link "C Camila Rodríguez Mora Activa 3156789012 camila.rodriguez@gmail.com Plan: Plan Semestral · Vence: 19 de agosto, 2026" [ref=e79] [cursor=pointer]':
+            - /url: /members/cmm1bzl2t000qfzecu9yg4q6y
+            - generic [ref=e82]:
+              - generic [ref=e83]: C
+              - generic [ref=e84]:
+                - generic [ref=e85]:
+                  - heading "Camila Rodríguez Mora" [level=3] [ref=e86]
+                  - generic [ref=e87]: Activa
+                - generic [ref=e88]:
+                  - img [ref=e89]
+                  - generic [ref=e91]: "3156789012"
+                - generic [ref=e92]:
+                  - img [ref=e93]
+                  - generic [ref=e96]: camila.rodriguez@gmail.com
+                - paragraph [ref=e97]: "Plan: Plan Semestral · Vence: 19 de agosto, 2026"
+          - 'link "D Diego Sánchez Vargas Activa 3445678901 diego.sanchez@gmail.com Plan: Plan Mensual · Vence: 27 de marzo, 2026" [ref=e98] [cursor=pointer]':
+            - /url: /members/cmm1bzki8000ifzecp41a9u28
+            - generic [ref=e101]:
+              - generic [ref=e102]: D
+              - generic [ref=e103]:
+                - generic [ref=e104]:
+                  - heading "Diego Sánchez Vargas" [level=3] [ref=e105]
+                  - generic [ref=e106]: Activa
+                - generic [ref=e107]:
+                  - img [ref=e108]
+                  - generic [ref=e110]: "3445678901"
+                - generic [ref=e111]:
+                  - img [ref=e112]
+                  - generic [ref=e115]: diego.sanchez@gmail.com
+                - paragraph [ref=e116]: "Plan: Plan Mensual · Vence: 27 de marzo, 2026"
+          - 'link "E Esteban Herrera Orozco Activa 3217852741 esteban.herrera.1126@gmail.com Plan: Plan Estudiante · Vence: 27 de marzo, 2026" [ref=e117] [cursor=pointer]':
+            - /url: /members/cmm1cf4k5000197np44ip7xdy
+            - generic [ref=e120]:
+              - generic [ref=e121]: E
+              - generic [ref=e122]:
+                - generic [ref=e123]:
+                  - heading "Esteban Herrera Orozco" [level=3] [ref=e124]
+                  - generic [ref=e125]: Activa
+                - generic [ref=e126]:
+                  - img [ref=e127]
+                  - generic [ref=e129]: "3217852741"
+                - generic [ref=e130]:
+                  - img [ref=e131]
+                  - generic [ref=e134]: esteban.herrera.1126@gmail.com
+                - paragraph [ref=e135]: "Plan: Plan Estudiante · Vence: 27 de marzo, 2026"
+          - 'link "F Felipe Castro Herrera Vencida 3267890123 felipe.castro@gmail.com Plan: Plan Mensual · Vence: 20 de febrero, 2026" [ref=e136] [cursor=pointer]':
+            - /url: /members/cmm1bzl2p000mfzecjhflstx4
+            - generic [ref=e139]:
+              - generic [ref=e140]: F
+              - generic [ref=e141]:
+                - generic [ref=e142]:
+                  - heading "Felipe Castro Herrera" [level=3] [ref=e143]
+                  - generic [ref=e144]: Vencida
+                - generic [ref=e145]:
+                  - img [ref=e146]
+                  - generic [ref=e148]: "3267890123"
+                - generic [ref=e149]:
+                  - img [ref=e150]
+                  - generic [ref=e153]: felipe.castro@gmail.com
+                - paragraph [ref=e154]: "Plan: Plan Mensual · Vence: 20 de febrero, 2026"
+          - 'link "I Isabella Jiménez Ruiz Activa 3378901234 isabella.jimenez@gmail.com Plan: Plan Trimestral · Vence: 28 de abril, 2026" [ref=e155] [cursor=pointer]':
+            - /url: /members/cmm1bzl2g000kfzecvh0slc9r
+            - generic [ref=e158]:
+              - generic [ref=e159]: I
+              - generic [ref=e160]:
+                - generic [ref=e161]:
+                  - heading "Isabella Jiménez Ruiz" [level=3] [ref=e162]
+                  - generic [ref=e163]: Activa
+                - generic [ref=e164]:
+                  - img [ref=e165]
+                  - generic [ref=e167]: "3378901234"
+                - generic [ref=e168]:
+                  - img [ref=e169]
+                  - generic [ref=e172]: isabella.jimenez@gmail.com
+                - paragraph [ref=e173]: "Plan: Plan Trimestral · Vence: 28 de abril, 2026"
+          - 'link "J Juan Pérez García Activa 3001234567 juan.perez@gmail.com Plan: Plan Mensual · Vence: 12 de marzo, 2026" [ref=e174] [cursor=pointer]':
+            - /url: /members/cmm1bzki8000dfzece4poewnu
+            - generic [ref=e177]:
+              - generic [ref=e178]: J
+              - generic [ref=e179]:
+                - generic [ref=e180]:
+                  - heading "Juan Pérez García" [level=3] [ref=e181]
+                  - generic [ref=e182]: Activa
+                - generic [ref=e183]:
+                  - img [ref=e184]
+                  - generic [ref=e186]: "3001234567"
+                - generic [ref=e187]:
+                  - img [ref=e188]
+                  - generic [ref=e191]: juan.perez@gmail.com
+                - paragraph [ref=e192]: "Plan: Plan Mensual · Vence: 12 de marzo, 2026"
+          - 'link "L Luciana Moreno Silva Activa 3290123456 luciana.moreno@gmail.com Plan: Plan Mensual · Vence: 26 de febrero, 2026" [ref=e193] [cursor=pointer]':
+            - /url: /members/cmm1bzl2w000sfzect223fm3i
+            - generic [ref=e196]:
+              - generic [ref=e197]: L
+              - generic [ref=e198]:
+                - generic [ref=e199]:
+                  - heading "Luciana Moreno Silva" [level=3] [ref=e200]
+                  - generic [ref=e201]: Activa
+                - generic [ref=e202]:
+                  - img [ref=e203]
+                  - generic [ref=e205]: "3290123456"
+                - generic [ref=e206]:
+                  - img [ref=e207]
+                  - generic [ref=e210]: luciana.moreno@gmail.com
+                - paragraph [ref=e211]: "Plan: Plan Mensual · Vence: 26 de febrero, 2026"
+          - 'link "M Mateo Álvarez Pinto Activa 3189012345 mateo.alvarez@gmail.com Plan: Plan Estudiante · Vence: 24 de marzo, 2026" [ref=e212] [cursor=pointer]':
+            - /url: /members/cmm1bzl2x000ufzecpdss21cp
+            - generic [ref=e215]:
+              - generic [ref=e216]: M
+              - generic [ref=e217]:
+                - generic [ref=e218]:
+                  - heading "Mateo Álvarez Pinto" [level=3] [ref=e219]
+                  - generic [ref=e220]: Activa
+                - generic [ref=e221]:
+                  - img [ref=e222]
+                  - generic [ref=e224]: "3189012345"
+                - generic [ref=e225]:
+                  - img [ref=e226]
+                  - generic [ref=e229]: mateo.alvarez@gmail.com
+                - paragraph [ref=e230]: "Plan: Plan Estudiante · Vence: 24 de marzo, 2026"
+          - 'link "S Sofía Martínez López Activa 3112345678 sofia.martinez@gmail.com Plan: Plan Trimestral · Vence: 16 de mayo, 2026" [ref=e231] [cursor=pointer]':
+            - /url: /members/cmm1bzki8000efzec5pnm9c32
+            - generic [ref=e234]:
+              - generic [ref=e235]: S
+              - generic [ref=e236]:
+                - generic [ref=e237]:
+                  - heading "Sofía Martínez López" [level=3] [ref=e238]
+                  - generic [ref=e239]: Activa
+                - generic [ref=e240]:
+                  - img [ref=e241]
+                  - generic [ref=e243]: "3112345678"
+                - generic [ref=e244]:
+                  - img [ref=e245]
+                  - generic [ref=e248]: sofia.martinez@gmail.com
+                - paragraph [ref=e249]: "Plan: Plan Trimestral · Vence: 16 de mayo, 2026"
+          - link "T Test QA 1771984991666 3001234567 qa1771984991666@test.com Sin membresía" [ref=e250] [cursor=pointer]:
+            - /url: /members/cmm1e4eal00011whtlbke9na7
+            - generic [ref=e253]:
+              - generic [ref=e254]: T
+              - generic [ref=e255]:
+                - heading "Test QA 1771984991666" [level=3] [ref=e257]
+                - generic [ref=e258]:
+                  - img [ref=e259]
+                  - generic [ref=e261]: "3001234567"
+                - generic [ref=e262]:
+                  - img [ref=e263]
+                  - generic [ref=e266]: qa1771984991666@test.com
+                - paragraph [ref=e267]: Sin membresía
+          - link "T Test QA 1771987912418 3001234567 qa1771987912418@test.com Sin membresía" [ref=e268] [cursor=pointer]:
+            - /url: /members/cmm1fuvlb00016bo67e3gxhst
+            - generic [ref=e271]:
+              - generic [ref=e272]: T
+              - generic [ref=e273]:
+                - heading "Test QA 1771987912418" [level=3] [ref=e275]
+                - generic [ref=e276]:
+                  - img [ref=e277]
+                  - generic [ref=e279]: "3001234567"
+                - generic [ref=e280]:
+                  - img [ref=e281]
+                  - generic [ref=e284]: qa1771987912418@test.com
+                - paragraph [ref=e285]: Sin membresía
+          - 'link "V Valentina Gómez Cruz Vencida 3334567890 valentina.gomez@gmail.com Plan: Plan Estudiante · Vence: 23 de febrero, 2026" [ref=e286] [cursor=pointer]':
+            - /url: /members/cmm1bzl2q000ofzecjz6e313x
+            - generic [ref=e289]:
+              - generic [ref=e290]: V
+              - generic [ref=e291]:
+                - generic [ref=e292]:
+                  - heading "Valentina Gómez Cruz" [level=3] [ref=e293]
+                  - generic [ref=e294]: Vencida
+                - generic [ref=e295]:
+                  - img [ref=e296]
+                  - generic [ref=e298]: "3334567890"
+                - generic [ref=e299]:
+                  - img [ref=e300]
+                  - generic [ref=e303]: valentina.gomez@gmail.com
+                - paragraph [ref=e304]: "Plan: Plan Estudiante · Vence: 23 de febrero, 2026"
+  - region "Notifications alt+T"
+  - alert [ref=e305]
+```

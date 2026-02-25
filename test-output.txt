@@ -1,0 +1,334 @@
+
+Running 24 tests using 4 workers
+
+  ✓   3 [chromium] › tests/e2e/auth.spec.ts:6:7 › Autenticación › Login con credenciales válidas redirige al dashboard (7.6s)
+  ✓   1 [chromium] › tests/e2e/dashboard.spec.ts:10:7 › Dashboard › Dashboard carga correctamente después de login (8.4s)
+  ✓   2 [chromium] › tests/e2e/attendance.spec.ts:10:7 › Asistencia › Página de asistencia carga correctamente (10.3s)
+  ✓   6 [chromium] › tests/e2e/dashboard.spec.ts:16:7 › Dashboard › Muestra las tarjetas de estadísticas (2.8s)
+  ✓   4 [chromium] › tests/e2e/members.spec.ts:14:7 › Miembros › Lista de miembros carga correctamente (11.6s)
+  ✓   8 [chromium] › tests/e2e/dashboard.spec.ts:28:7 › Dashboard › Sección de últimos pagos y asistencia reciente son visibles (2.4s)
+  ✓   9 [chromium] › tests/e2e/members.spec.ts:25:7 › Miembros › Crear nuevo miembro con todos los campos (3.9s)
+  ✓  10 [chromium] › tests/e2e/dashboard.spec.ts:38:7 › Dashboard › Accesos rápidos (quick actions) están presentes (2.3s)
+  ✘   5 [chromium] › tests/e2e/auth.spec.ts:23:7 › Autenticación › Login con credenciales inválidas muestra error (11.2s)
+  ✓  12 [chromium] › tests/e2e/memberships.spec.ts:10:7 › Membresías › Lista de membresías carga correctamente (5.4s)
+  ✓  11 [chromium] › tests/e2e/members.spec.ts:53:7 › Miembros › Ver detalle de un miembro (6.1s)
+  ✓  14 [chromium] › tests/e2e/memberships.spec.ts:21:7 › Membresías › Tabs de filtro están presentes (Todas, Activas, Vencidas, Pendientes) (4.5s)
+⚠️ BUG: No hay campo de búsqueda en la lista de miembros
+  ✘   7 [chromium] › tests/e2e/attendance.spec.ts:21:7 › Asistencia › Componente de check-in rápido está presente (18.5s)
+  ✘  15 [chromium] › tests/e2e/members.spec.ts:67:7 › Miembros › Buscar/filtrar miembros en la lista (10.0s)
+  ✘  13 [chromium] › tests/e2e/auth.spec.ts:23:7 › Autenticación › Login con credenciales inválidas muestra error (retry #1) (11.4s)
+  ✓  16 [chromium] › tests/e2e/memberships.spec.ts:31:7 › Membresías › Crear nueva membresía asignando miembro y plan (9.1s)
+  ✓  19 [chromium] › tests/e2e/auth.spec.ts:39:7 › Autenticación › Logout redirige a la página de login (3.8s)
+⚠️ BUG: No hay campo de búsqueda en la lista de miembros
+  ✓  21 [chromium] › tests/e2e/payments.spec.ts:10:7 › Pagos › Lista de pagos carga correctamente (4.5s)
+ℹ️ No hay membresías próximas a vencer con número de teléfono configurado
+  ✓  20 [chromium] › tests/e2e/memberships.spec.ts:79:7 › Membresías › Botón de recordatorio WhatsApp aparece en membresías próximas a vencer (7.0s)
+  ✘  18 [chromium] › tests/e2e/members.spec.ts:67:7 › Miembros › Buscar/filtrar miembros en la lista (retry #1) (9.9s)
+  ✓  23 [chromium] › tests/e2e/plans.spec.ts:13:7 › Planes › Lista de planes carga correctamente (4.2s)
+  ✘  17 [chromium] › tests/e2e/attendance.spec.ts:21:7 › Asistencia › Componente de check-in rápido está presente (retry #1) (18.4s)
+  ✓  22 [chromium] › tests/e2e/payments.spec.ts:21:7 › Pagos › Registrar nuevo pago (9.1s)
+  ✓  24 [chromium] › tests/e2e/plans.spec.ts:24:7 › Planes › Crear nuevo plan (5.1s)
+  ✓  26 [chromium] › tests/e2e/plans.spec.ts:58:7 › Planes › Eliminar un plan (4.2s)
+  ✘  25 [chromium] › tests/e2e/attendance.spec.ts:34:7 › Asistencia › Registrar check-in de un miembro (20.4s)
+  ✘  27 [chromium] › tests/e2e/attendance.spec.ts:34:7 › Asistencia › Registrar check-in de un miembro (retry #1) (20.5s)
+  ✘  28 [chromium] › tests/e2e/attendance.spec.ts:71:7 › Asistencia › Log de asistencias es visible (18.3s)
+  ✘  29 [chromium] › tests/e2e/attendance.spec.ts:71:7 › Asistencia › Log de asistencias es visible (retry #1) (18.4s)
+
+
+  1) [chromium] › tests/e2e/attendance.spec.ts:21:7 › Asistencia › Componente de check-in rápido está presente 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('[data-radix-select-trigger]').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('[data-radix-select-trigger]').first()[22m
+
+
+      25 |     // Verificar que el selector de miembro existe
+      26 |     const memberSelector = page.locator('[data-radix-select-trigger]').first()
+    > 27 |     await expect(memberSelector).toBeVisible({ timeout: 15000 })
+         |                                  ^
+      28 |
+      29 |     // Verificar que el botón de registrar existe
+      30 |     const registerButton = page.locator('button[type="submit"]:has-text("Registrar"), button:has-text("Registrar")')
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/attendance.spec.ts:27:34
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/attendance-Asistencia-Comp-a17d1-eck-in-rápido-está-presente-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/attendance-Asistencia-Comp-a17d1-eck-in-rápido-está-presente-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('[data-radix-select-trigger]').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('[data-radix-select-trigger]').first()[22m
+
+
+      25 |     // Verificar que el selector de miembro existe
+      26 |     const memberSelector = page.locator('[data-radix-select-trigger]').first()
+    > 27 |     await expect(memberSelector).toBeVisible({ timeout: 15000 })
+         |                                  ^
+      28 |
+      29 |     // Verificar que el botón de registrar existe
+      30 |     const registerButton = page.locator('button[type="submit"]:has-text("Registrar"), button:has-text("Registrar")')
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/attendance.spec.ts:27:34
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/attendance-Asistencia-Comp-a17d1-eck-in-rápido-está-presente-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/attendance-Asistencia-Comp-a17d1-eck-in-rápido-está-presente-chromium-retry1/error-context.md
+
+  2) [chromium] › tests/e2e/attendance.spec.ts:34:7 › Asistencia › Registrar check-in de un miembro 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('[data-radix-select-trigger]').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('[data-radix-select-trigger]').first()[22m
+
+
+      41 |     // Seleccionar un miembro en el Quick Check-In
+      42 |     const memberSelector = page.locator('[data-radix-select-trigger]').first()
+    > 43 |     await expect(memberSelector).toBeVisible({ timeout: 15000 })
+         |                                  ^
+      44 |     await memberSelector.click()
+      45 |     await page.waitForTimeout(500)
+      46 |
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/attendance.spec.ts:43:34
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/attendance-Asistencia-Registrar-check-in-de-un-miembro-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/attendance-Asistencia-Registrar-check-in-de-un-miembro-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('[data-radix-select-trigger]').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('[data-radix-select-trigger]').first()[22m
+
+
+      41 |     // Seleccionar un miembro en el Quick Check-In
+      42 |     const memberSelector = page.locator('[data-radix-select-trigger]').first()
+    > 43 |     await expect(memberSelector).toBeVisible({ timeout: 15000 })
+         |                                  ^
+      44 |     await memberSelector.click()
+      45 |     await page.waitForTimeout(500)
+      46 |
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/attendance.spec.ts:43:34
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/attendance-Asistencia-Registrar-check-in-de-un-miembro-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/attendance-Asistencia-Registrar-check-in-de-un-miembro-chromium-retry1/error-context.md
+
+  3) [chromium] › tests/e2e/attendance.spec.ts:71:7 › Asistencia › Log de asistencias es visible ───
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=Asistencias de Hoy, text=Historial del Miembro').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('text=Asistencias de Hoy, text=Historial del Miembro').first()[22m
+
+
+      76 |     await expect(
+      77 |       page.locator('text=Asistencias de Hoy, text=Historial del Miembro').first()
+    > 78 |     ).toBeVisible({ timeout: 15000 })
+         |       ^
+      79 |   })
+      80 |
+      81 | })
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/attendance.spec.ts:78:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/attendance-Asistencia-Log-de-asistencias-es-visible-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/attendance-Asistencia-Log-de-asistencias-es-visible-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=Asistencias de Hoy, text=Historial del Miembro').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('text=Asistencias de Hoy, text=Historial del Miembro').first()[22m
+
+
+      76 |     await expect(
+      77 |       page.locator('text=Asistencias de Hoy, text=Historial del Miembro').first()
+    > 78 |     ).toBeVisible({ timeout: 15000 })
+         |       ^
+      79 |   })
+      80 |
+      81 | })
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/attendance.spec.ts:78:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/attendance-Asistencia-Log-de-asistencias-es-visible-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/attendance-Asistencia-Log-de-asistencias-es-visible-chromium-retry1/error-context.md
+
+  4) [chromium] › tests/e2e/auth.spec.ts:23:7 › Autenticación › Login con credenciales inválidas muestra error 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=Correo o contraseña incorrectos')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('text=Correo o contraseña incorrectos')[22m
+
+
+      31 |
+      32 |     // Esperar mensaje de error
+    > 33 |     await expect(page.locator('text=Correo o contraseña incorrectos')).toBeVisible({ timeout: 10000 })
+         |                                                                        ^
+      34 |
+      35 |     // Debe permanecer en la página de login
+      36 |     await expect(page).toHaveURL(/login/)
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/auth.spec.ts:33:72
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Autenticación-Login-c-dfdcb-les-inválidas-muestra-error-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth-Autenticación-Login-c-dfdcb-les-inválidas-muestra-error-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=Correo o contraseña incorrectos')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('text=Correo o contraseña incorrectos')[22m
+
+
+      31 |
+      32 |     // Esperar mensaje de error
+    > 33 |     await expect(page.locator('text=Correo o contraseña incorrectos')).toBeVisible({ timeout: 10000 })
+         |                                                                        ^
+      34 |
+      35 |     // Debe permanecer en la página de login
+      36 |     await expect(page).toHaveURL(/login/)
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/auth.spec.ts:33:72
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Autenticación-Login-c-dfdcb-les-inválidas-muestra-error-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth-Autenticación-Login-c-dfdcb-les-inválidas-muestra-error-chromium-retry1/error-context.md
+
+  5) [chromium] › tests/e2e/members.spec.ts:67:7 › Miembros › Buscar/filtrar miembros en la lista ──
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('input[type="search"], input[placeholder*="buscar" i], input[placeholder*="search" i], input[placeholder*="filtrar" i]')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('input[type="search"], input[placeholder*="buscar" i], input[placeholder*="search" i], input[placeholder*="filtrar" i]')[22m
+
+
+      80 |       console.warn('⚠️ BUG: No hay campo de búsqueda en la lista de miembros')
+      81 |       // El test falla intencionalmente para reportar el bug
+    > 82 |       await expect(searchInput).toBeVisible()
+         |                                 ^
+      83 |     } else {
+      84 |       await searchInput.fill('Test')
+      85 |       await page.waitForLoadState('networkidle')
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/members.spec.ts:82:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/members-Miembros-Buscar-filtrar-miembros-en-la-lista-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/members-Miembros-Buscar-filtrar-miembros-en-la-lista-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('input[type="search"], input[placeholder*="buscar" i], input[placeholder*="search" i], input[placeholder*="filtrar" i]')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('input[type="search"], input[placeholder*="buscar" i], input[placeholder*="search" i], input[placeholder*="filtrar" i]')[22m
+
+
+      80 |       console.warn('⚠️ BUG: No hay campo de búsqueda en la lista de miembros')
+      81 |       // El test falla intencionalmente para reportar el bug
+    > 82 |       await expect(searchInput).toBeVisible()
+         |                                 ^
+      83 |     } else {
+      84 |       await searchInput.fill('Test')
+      85 |       await page.waitForLoadState('networkidle')
+        at /root/.openclaw/workspace/projects/gymflow/tests/e2e/members.spec.ts:82:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/members-Miembros-Buscar-filtrar-miembros-en-la-lista-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/members-Miembros-Buscar-filtrar-miembros-en-la-lista-chromium-retry1/error-context.md
+
+  5 failed
+    [chromium] › tests/e2e/attendance.spec.ts:21:7 › Asistencia › Componente de check-in rápido está presente 
+    [chromium] › tests/e2e/attendance.spec.ts:34:7 › Asistencia › Registrar check-in de un miembro ─
+    [chromium] › tests/e2e/attendance.spec.ts:71:7 › Asistencia › Log de asistencias es visible ────
+    [chromium] › tests/e2e/auth.spec.ts:23:7 › Autenticación › Login con credenciales inválidas muestra error 
+    [chromium] › tests/e2e/members.spec.ts:67:7 › Miembros › Buscar/filtrar miembros en la lista ───
+  19 passed (2.3m)

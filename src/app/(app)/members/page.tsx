@@ -128,7 +128,9 @@ export default async function MembersPage({
       </div>
 
       {/* Campo de búsqueda */}
-      <MembersSearch defaultValue={q ?? ""} />
+      <Suspense fallback={<div className="h-[44px] rounded-md bg-gray-100 animate-pulse" />}>
+        <MembersSearch defaultValue={q ?? ""} />
+      </Suspense>
 
       <Suspense fallback={
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
