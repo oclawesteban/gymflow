@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { updateGymSettings } from "@/lib/actions/settings"
 import { createPlan } from "@/lib/actions/plans"
-import { createMember } from "@/lib/actions/members"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,10 +18,9 @@ interface OnboardingWizardProps {
 }
 
 const STEPS = [
-  { title: "Bienvenida", description: "Configura tu gimnasio en 3 pasos simples" },
+  { title: "Bienvenida", description: "Configura tu gimnasio en 2 pasos simples" },
   { title: "Tu Gimnasio", description: "Información básica del gimnasio" },
   { title: "Primer Plan", description: "Crea tu plan de membresía" },
-  { title: "Primer Miembro", description: "Agrega tu primer socio" },
   { title: "¡Listo!", description: "Todo configurado" },
 ]
 
@@ -42,15 +40,10 @@ export function OnboardingWizard({ shouldShow, gymName }: OnboardingWizardProps)
   const [planPrice, setPlanPrice] = useState("80000")
   const [planDays, setPlanDays] = useState("30")
 
-  // Member info
-  const [memberName, setMemberName] = useState("")
-  const [memberPhone, setMemberPhone] = useState("")
-
   // Summary
-  const [summary, setSummary] = useState<{ gym: string; plan: string; member: string }>({
+  const [summary, setSummary] = useState<{ gym: string; plan: string }>({
     gym: "",
     plan: "",
-    member: "",
   })
 
   useEffect(() => {
@@ -92,20 +85,6 @@ export function OnboardingWizard({ shouldShow, gymName }: OnboardingWizardProps)
       await createPlan({ name: planName, price, durationDays: days })
       setSummary((s) => ({ ...s, plan: `${planName} — $${price.toLocaleString("es-CO")} / ${days} días` }))
       setStep(3)
-    } catch (err: any) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleStep4() {
-    if (!memberName.trim()) return
-    setLoading(true)
-    try {
-      await createMember({ name: memberName, phone: memberPhone })
-      setSummary((s) => ({ ...s, member: memberName }))
-      setStep(4)
       fireConfetti()
       localStorage.setItem(STORAGE_KEY, "true")
     } catch (err: any) {
@@ -151,7 +130,7 @@ export function OnboardingWizard({ shouldShow, gymName }: OnboardingWizardProps)
               <p className="text-xs text-gray-400">{STEPS[step].description}</p>
             </div>
           </div>
-          {step < 4 && (
+          {step < 3 && (
             <button
               onClick={handleDismiss}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
@@ -179,6 +158,7 @@ export function OnboardingWizard({ shouldShow, gymName }: OnboardingWizardProps)
 
         {/* Content */}
         <div className="px-6 pb-6 space-y-4">
+
           {/* Step 0 — Bienvenida */}
           {step === 0 && (
             <div className="text-center py-4 space-y-4">
@@ -187,14 +167,13 @@ export function OnboardingWizard({ shouldShow, gymName }: OnboardingWizardProps)
                 ¡Bienvenido a GymFlow!
               </h2>
               <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                Vamos a configurar tu gimnasio <strong>{gymName}</strong> en 3 pasos simples.
-                Esto solo tomará unos minutos.
+                Vamos a configurar tu gimnasio <strong>{gymName}</strong> en 2 pasos simples.
+                Esto solo tomará un momento.
               </p>
               <div className="flex flex-col gap-2 text-sm text-left bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-4">
                 {[
                   "Configura la info de tu gimnasio",
                   "Crea tu primer plan de membresía",
-                  "Agrega tu primer socio",
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
                     <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold flex-shrink-0">
@@ -301,40 +280,8 @@ export function OnboardingWizard({ shouldShow, gymName }: OnboardingWizardProps)
             </div>
           )}
 
-          {/* Step 3 — Primer miembro */}
+          {/* Step 3 — ¡Listo! */}
           {step === 3 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Nombre del socio *</Label>
-                <Input
-                  value={memberName}
-                  onChange={(e) => setMemberName(e.target.value)}
-                  placeholder="Nombre completo"
-                  className="min-h-[48px]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Teléfono (opcional)</Label>
-                <Input
-                  value={memberPhone}
-                  onChange={(e) => setMemberPhone(e.target.value)}
-                  placeholder="+57 300 123 4567"
-                  className="min-h-[48px]"
-                />
-              </div>
-              <Button
-                onClick={handleStep4}
-                disabled={loading || !memberName.trim()}
-                className="w-full bg-blue-600 hover:bg-blue-700 min-h-[52px] gap-2"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                Agregar miembro <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-
-          {/* Step 4 — ¡Listo! */}
-          {step === 4 && (
             <div className="text-center space-y-4">
               <div className="text-5xl">🎉</div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -347,7 +294,6 @@ export function OnboardingWizard({ shouldShow, gymName }: OnboardingWizardProps)
                 {[
                   { label: "Gimnasio", value: summary.gym },
                   { label: "Plan creado", value: summary.plan },
-                  { label: "Primer socio", value: summary.member },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2 text-green-800 dark:text-green-300">
                     <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
@@ -365,6 +311,7 @@ export function OnboardingWizard({ shouldShow, gymName }: OnboardingWizardProps)
               </Button>
             </div>
           )}
+
         </div>
       </div>
     </div>
