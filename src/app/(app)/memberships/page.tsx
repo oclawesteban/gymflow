@@ -3,11 +3,12 @@ import { formatDate, formatCurrency, getMembershipStatusColor, getMembershipStat
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Plus, CreditCard, RefreshCw, DollarSign, AlertCircle } from "lucide-react"
+import { Plus, CreditCard, DollarSign, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MembershipActions } from "@/components/memberships/membership-actions"
+import { WhatsAppReminderButton } from "@/components/memberships/whatsapp-reminder-button"
 
 async function MembershipsList({ status }: { status?: string }) {
   const memberships = await getMemberships(status ? { status } : undefined)
@@ -42,6 +43,8 @@ async function MembershipsList({ status }: { status?: string }) {
         const colors = getMembershipStatusColor(ms.status, ms.endDate)
         const totalPaid = ms.payments.reduce((sum, p) => sum + Number(p.amount), 0)
         const isExpiringSoon = ms.status === "ACTIVE" && colors.dot === "bg-yellow-500"
+        const isExpired = ms.status === "EXPIRED"
+        const showReminder = (isExpiringSoon || isExpired) && !!ms.member.phone
 
         return (
           <Card key={ms.id} className={`border ${isExpiringSoon ? "border-yellow-200" : "border-gray-200"}`}>
@@ -93,13 +96,22 @@ async function MembershipsList({ status }: { status?: string }) {
               </div>
 
               {/* Actions Row */}
-              <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                <Link href={`/payments/new?membershipId=${ms.id}`} className="flex-1">
+              <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 flex-wrap">
+                <Link href={`/payments/new?membershipId=${ms.id}`} className="flex-1 min-w-[80px]">
                   <Button size="sm" variant="outline" className="w-full min-h-[40px] gap-1 text-xs">
                     <DollarSign className="h-3.5 w-3.5" />
                     Pago
                   </Button>
                 </Link>
+                {showReminder && (
+                  <WhatsAppReminderButton
+                    phone={ms.member.phone!}
+                    memberName={ms.member.name}
+                    gymName={ms.member.gym.name}
+                    planName={ms.plan.name}
+                    expiresAt={new Date(ms.endDate)}
+                  />
+                )}
                 <MembershipActions membershipId={ms.id} status={ms.status} />
               </div>
             </CardContent>

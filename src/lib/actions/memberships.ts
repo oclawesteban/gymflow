@@ -25,11 +25,39 @@ export async function getMemberships(filters?: {
       ...(filters?.memberId ? { memberId: filters.memberId } : {}),
     },
     include: {
-      member: true,
+      member: { include: { gym: true } },
       plan: true,
       payments: { orderBy: { paidAt: "desc" } },
     },
     orderBy: { createdAt: "desc" },
+  })
+}
+
+export async function getExpiringMemberships() {
+  const gymId = await getGymId()
+  const now = new Date()
+  const weekFromNow = addDays(now, 7)
+
+  return prisma.membership.findMany({
+    where: {
+      member: { gymId },
+      OR: [
+        // Expiring within the next 7 days (still active)
+        {
+          status: "ACTIVE",
+          endDate: { gte: now, lte: weekFromNow },
+        },
+        // Already expired
+        {
+          status: "EXPIRED",
+        },
+      ],
+    },
+    include: {
+      member: { include: { gym: true } },
+      plan: true,
+    },
+    orderBy: { endDate: "asc" },
   })
 }
 

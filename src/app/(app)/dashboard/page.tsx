@@ -1,5 +1,6 @@
 import { getDashboardStats } from "@/lib/actions/dashboard"
-import { formatCurrency, formatDateTime, formatRelative } from "@/lib/utils/format"
+import { getExpiringMemberships } from "@/lib/actions/memberships"
+import { formatCurrency, formatRelative } from "@/lib/utils/format"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -15,6 +16,7 @@ import {
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Suspense } from "react"
+import { ExpiringSection } from "@/components/memberships/expiring-section"
 
 async function DashboardContent() {
   let data
@@ -29,6 +31,22 @@ async function DashboardContent() {
   }
 
   const { gym, stats, recentPayments, recentAttendance } = data
+
+  let expiringMemberships: Awaited<ReturnType<typeof getExpiringMemberships>> = []
+  try {
+    expiringMemberships = await getExpiringMemberships()
+  } catch {
+    // Non-critical — don't break the dashboard
+  }
+
+  const expiringSectionData = expiringMemberships.map((m) => ({
+    id: m.id,
+    endDate: m.endDate,
+    status: m.status,
+    member: { name: m.member.name, phone: m.member.phone },
+    plan: { name: m.plan.name },
+    gymName: m.member.gym.name,
+  }))
 
   const statCards = [
     {
@@ -139,6 +157,23 @@ async function DashboardContent() {
           )
         })}
       </div>
+
+      {/* Expiring / Expired Memberships */}
+      {expiringSectionData.length > 0 && (
+        <Card className="border-yellow-200">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+              <CardTitle className="text-base font-semibold text-yellow-800">
+                Recordatorios de Membresía
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ExpiringSection memberships={expiringSectionData} />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Bottom Panels */}
       <div className="grid md:grid-cols-2 gap-6">
