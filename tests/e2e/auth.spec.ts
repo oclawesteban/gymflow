@@ -43,8 +43,8 @@ test.describe('Autenticación', () => {
     // Verificar que estamos en el dashboard
     await expect(page).toHaveURL(/dashboard/)
 
-    // Hacer logout (botón en el sidebar desktop)
-    await page.click('button:has-text("Cerrar sesión")')
+    // Hacer logout (botón en el sidebar — ahora es ícono con title)
+    await page.click('button[title="Cerrar sesión"]')
 
     // Debe redirigir al login
     await page.waitForURL('**/login', { timeout: 10000 })

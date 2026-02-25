@@ -56,9 +56,6 @@ function AdminAvatar({ name, photoUrl }: { name?: string | null; photoUrl?: stri
         src={photoUrl}
         alt={name ?? "Admin"}
         className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-600 flex-shrink-0"
-        onError={(e) => {
-          ;(e.target as HTMLImageElement).style.display = "none"
-        }}
       />
     )
   }
@@ -76,71 +73,11 @@ export function Sidebar() {
   const { data: session } = useSession()
   const user = session?.user as any
 
-  const NavLinks = () => (
-    <nav className="flex flex-col gap-1 flex-1 overflow-y-auto">
-      {navItems.map((item) => {
-        const Icon = item.icon
-        const active = pathname.startsWith(item.href)
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setMobileOpen(false)}
-            className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
-              "min-h-[48px] touch-target",
-              active
-                ? "bg-blue-600 text-white shadow-sm"
-                : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            <Icon className="h-5 w-5 flex-shrink-0" />
-            <span>{item.label}</span>
-          </Link>
-        )
-      })}
-    </nav>
-  )
-
-  const BottomBar = () => (
-    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
-      {/* Notificaciones + Tema */}
-      <div className="flex items-center justify-between px-2">
-        <NotificationBell />
-        <ThemeToggle />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 text-gray-500 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          title="Cerrar sesión"
-        >
-          <LogOut className="h-5 w-5" />
-        </Button>
-      </div>
-      {/* Avatar del admin */}
-      <Link
-        href="/profile"
-        onClick={() => setMobileOpen(false)}
-        className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-      >
-        <AdminAvatar name={user?.name} photoUrl={user?.photoUrl} />
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-            {user?.name ?? "Admin"}
-          </p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
-            {user?.email ?? ""}
-          </p>
-        </div>
-      </Link>
-    </div>
-  )
-
   return (
     <>
-      {/* Desktop Sidebar */}
+      {/* ── Desktop Sidebar ── */}
       <aside className="hidden md:flex flex-col w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 min-h-screen px-4 py-6 fixed left-0 top-0 bottom-0 z-30">
+        {/* Logo */}
         <div className="flex items-center gap-2 px-2 mb-6">
           <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
             <Dumbbell className="h-5 w-5 text-white" />
@@ -150,11 +87,67 @@ export function Sidebar() {
             <p className="text-xs text-gray-500 dark:text-gray-400">Gestión de Gimnasio</p>
           </div>
         </div>
-        <NavLinks />
-        <BottomBar />
+
+        {/* Nav */}
+        <nav className="flex flex-col gap-1 flex-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            const active = pathname.startsWith(item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px]",
+                  active
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                )}
+              >
+                <Icon className="h-5 w-5 flex-shrink-0" />
+                <span>{item.label}</span>
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Bottom bar — desktop */}
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
+          {/* Acciones rápidas */}
+          <div className="flex items-center justify-between px-2">
+            <NotificationBell dropUp />
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 text-gray-500 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Avatar / link a perfil */}
+          <Link
+            href="/profile"
+            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <AdminAvatar name={user?.name} photoUrl={user?.photoUrl} />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {user?.name ?? "Admin"}
+              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                {user?.email ?? ""}
+              </p>
+            </div>
+          </Link>
+        </div>
       </aside>
 
-      {/* Mobile Top Bar */}
+      {/* ── Mobile Top Bar ── */}
       <div className="md:hidden fixed top-0 left-0 right-0 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 z-40 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -163,20 +156,22 @@ export function Sidebar() {
           <span className="font-bold text-gray-900 dark:text-white">GymFlow</span>
         </div>
         <div className="flex items-center gap-1">
-          <NotificationBell />
+          {/* En mobile topbar: notificaciones abre hacia abajo-izquierda */}
+          <NotificationBell alignEnd />
           <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
             className="h-10 w-10 dark:text-gray-300"
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Menú"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* ── Mobile Overlay ── */}
       {mobileOpen && (
         <div
           className="md:hidden fixed inset-0 bg-black/50 z-50"
@@ -184,13 +179,14 @@ export function Sidebar() {
         />
       )}
 
-      {/* Mobile Slide-in Menu */}
+      {/* ── Mobile Slide-in Menu ── */}
       <div
         className={cn(
           "md:hidden fixed top-0 left-0 bottom-0 w-72 bg-white dark:bg-gray-950 z-50 flex flex-col px-4 py-6 transition-transform duration-200",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
+        {/* Header menú mobile */}
         <div className="flex items-center justify-between mb-6 px-2">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
@@ -205,8 +201,65 @@ export function Sidebar() {
             <X className="h-5 w-5" />
           </Button>
         </div>
-        <NavLinks />
-        <BottomBar />
+
+        {/* Nav links mobile */}
+        <nav className="flex flex-col gap-1 flex-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            const active = pathname.startsWith(item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px]",
+                  active
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                )}
+              >
+                <Icon className="h-5 w-5 flex-shrink-0" />
+                <span>{item.label}</span>
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Bottom bar — mobile menu */}
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
+          <div className="flex items-center justify-between px-2">
+            {/* En el slide-in mobile: abre hacia arriba-derecha para no salir */}
+            <NotificationBell dropUp alignEnd />
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 text-gray-500 dark:text-gray-400 hover:text-red-600 hover:bg-red-50"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <Link
+            href="/profile"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <AdminAvatar name={user?.name} photoUrl={user?.photoUrl} />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {user?.name ?? "Admin"}
+              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                {user?.email ?? ""}
+              </p>
+            </div>
+          </Link>
+        </div>
       </div>
     </>
   )

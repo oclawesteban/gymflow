@@ -31,7 +31,12 @@ const severityStyles = {
   },
 }
 
-export function NotificationBell() {
+interface NotificationBellProps {
+  dropUp?: boolean   // abre hacia arriba (cuando está en la parte inferior)
+  alignEnd?: boolean // alinea el dropdown al borde derecho
+}
+
+export function NotificationBell({ dropUp = false, alignEnd = false }: NotificationBellProps) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -73,9 +78,13 @@ export function NotificationBell() {
         )}
       </Button>
 
-      {/* Dropdown */}
+      {/* Dropdown — posición según contexto */}
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 overflow-hidden">
+        <div className={cn(
+          "absolute w-80 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-[100] overflow-hidden",
+          dropUp ? "bottom-full mb-2" : "top-full mt-2",
+          alignEnd ? "right-0" : "left-0",
+        )}>
           <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
               Notificaciones
