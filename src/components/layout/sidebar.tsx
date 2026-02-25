@@ -14,6 +14,8 @@ import {
   Menu,
   X,
   LogOut,
+  BarChart2,
+  Settings,
 } from "lucide-react"
 import { useState } from "react"
 import { signOut } from "next-auth/react"
@@ -26,6 +28,8 @@ const navItems = [
   { href: "/memberships", label: "Membresías", icon: CreditCard },
   { href: "/payments", label: "Pagos", icon: DollarSign },
   { href: "/attendance", label: "Asistencia", icon: Calendar },
+  { href: "/reports", label: "Reportes", icon: BarChart2 },
+  { href: "/settings", label: "Configuración", icon: Settings },
 ]
 
 export function Sidebar() {
