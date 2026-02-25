@@ -7,13 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { TurnstileButton } from "@/components/portal/turnstile-button"
 import { PortalLogoutButton } from "@/components/portal/portal-logout-button"
+import { PhotoUpload } from "@/components/portal/photo-upload"
 import {
   CreditCard,
   Calendar,
   DollarSign,
   CheckCircle,
   Clock,
-  User,
 } from "lucide-react"
 
 export default async function PortalDashboardPage() {
@@ -50,18 +50,11 @@ export default async function PortalDashboardPage() {
           <p className="text-gray-500 text-sm mt-0.5">{gym.name}</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-xl overflow-hidden">
-            {member.photoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={member.photoUrl}
-                alt={member.name}
-                className="w-full h-full object-cover rounded-full"
-              />
-            ) : (
-              <User className="h-6 w-6 text-blue-600" />
-            )}
-          </div>
+          <PhotoUpload
+            memberId={member.id}
+            currentPhotoUrl={member.photoUrl}
+            memberName={member.name}
+          />
           <PortalLogoutButton />
         </div>
       </div>

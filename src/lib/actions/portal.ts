@@ -256,6 +256,114 @@ export async function getMemberPortalData(
   }
 }
 
+// ─── Clases del portal ─────────────────────────────────────────────
+
+export async function getPortalClasses(gymId: string) {
+  const now = new Date()
+  const day = now.getDay() // 0=Dom, 1=Lun, ..., 6=Sáb
+  const diffToMonday = day === 0 ? -6 : 1 - day
+  const monday = new Date(now)
+  monday.setDate(now.getDate() + diffToMonday)
+  monday.setHours(0, 0, 0, 0)
+
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
+  sunday.setHours(23, 59, 59, 999)
+
+  return prisma.gymClass.findMany({
+    where: { gymId, isActive: true },
+    include: {
+      bookings: {
+        where: { status: "CONFIRMED", date: { gte: monday, lte: sunday } },
+        select: { memberId: true, id: true },
+      },
+    },
+    orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
+  })
+}
+
+export async function bookPortalClass(
+  memberId: string,
+  gymId: string,
+  classId: string,
+  dateStr: string
+): Promise<{ success: boolean; error?: string }> {
+  const date = new Date(dateStr)
+  date.setHours(0, 0, 0, 0)
+
+  const gymClass = await prisma.gymClass.findFirst({
+    where: { id: classId, gymId },
+    include: { bookings: { where: { date, status: "CONFIRMED" } } },
+  })
+  if (!gymClass) return { success: false, error: "Clase no encontrada" }
+
+  if (gymClass.bookings.length >= gymClass.capacity) {
+    return { success: false, error: "La clase ya no tiene cupos disponibles" }
+  }
+
+  const member = await prisma.member.findFirst({
+    where: { id: memberId, gymId },
+    include: { memberships: { where: { status: "ACTIVE" }, take: 1 } },
+  })
+  if (!member) return { success: false, error: "Miembro no encontrado" }
+  if (member.memberships.length === 0) {
+    return { success: false, error: "Necesitas una membresía activa para reservar clases" }
+  }
+
+  try {
+    await prisma.classBooking.create({
+      data: { classId, memberId, date, status: "CONFIRMED" },
+    })
+    return { success: true }
+  } catch {
+    return { success: false, error: "Ya tienes una reserva para esta clase" }
+  }
+}
+
+export async function cancelPortalBooking(
+  memberId: string,
+  classId: string,
+  dateStr: string
+): Promise<{ success: boolean; error?: string }> {
+  const date = new Date(dateStr)
+  date.setHours(0, 0, 0, 0)
+
+  await prisma.classBooking.updateMany({
+    where: { classId, memberId, date, status: "CONFIRMED" },
+    data: { status: "CANCELLED" },
+  })
+  return { success: true }
+}
+
+export async function getMemberUpcomingBookings(memberId: string) {
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+
+  return prisma.classBooking.findMany({
+    where: { memberId, status: "CONFIRMED", date: { gte: now } },
+    include: { gymClass: true },
+    orderBy: [{ date: "asc" }],
+    take: 10,
+  })
+}
+
+// ─── Foto del socio (portal) ───────────────────────────────────────
+
+export async function updateMemberPhoto(
+  memberId: string,
+  photoUrl: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await prisma.member.update({
+      where: { id: memberId },
+      data: { photoUrl },
+    })
+    return { success: true }
+  } catch {
+    return { success: false, error: "Error al actualizar la foto" }
+  }
+}
+
 // ─── Check-in propio del socio ─────────────────────────────────────
 
 export async function selfCheckIn(
