@@ -58,6 +58,10 @@ export async function createMember(data: {
   email?: string
   phone?: string
   photoUrl?: string
+  idType?: string
+  idNumber?: string
+  hasEps?: boolean
+  epsName?: string
   emergencyContact?: string
   emergencyPhone?: string
   notes?: string
@@ -75,6 +79,10 @@ export async function updateMember(id: string, data: {
   email?: string
   phone?: string
   photoUrl?: string
+  idType?: string
+  idNumber?: string
+  hasEps?: boolean
+  epsName?: string
   emergencyContact?: string
   emergencyPhone?: string
   notes?: string

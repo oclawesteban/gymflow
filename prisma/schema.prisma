@@ -88,6 +88,10 @@ model Member {
   email            String?
   phone            String?
   photoUrl         String?
+  idType           String?        // CC, CE, TI, PA
+  idNumber         String?        // Número de documento
+  hasEps           Boolean        @default(false)
+  epsName          String?        // Nombre de la EPS
   emergencyContact String?
   emergencyPhone   String?
   notes            String?
@@ -214,6 +218,10 @@ model Instructor {
   email     String?
   phone     String?
   photoUrl  String?
+  idType    String?    // CC, CE, TI, PA
+  idNumber  String?    // Número de documento
+  hasEps    Boolean    @default(false)
+  epsName   String?    // Nombre de la EPS
   specialty String?
   bio       String?
   isActive  Boolean    @default(true)

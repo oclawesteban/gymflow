@@ -41,6 +41,10 @@ export async function createInstructor(data: {
   email?: string
   phone?: string
   photoUrl?: string
+  idType?: string
+  idNumber?: string
+  hasEps?: boolean
+  epsName?: string
   specialty?: string
   bio?: string
 }) {
@@ -53,6 +57,10 @@ export async function createInstructor(data: {
       email: data.email || null,
       phone: data.phone || null,
       photoUrl: data.photoUrl || null,
+      idType: data.idType || null,
+      idNumber: data.idNumber || null,
+      hasEps: data.hasEps ?? false,
+      epsName: data.epsName || null,
       specialty: data.specialty || null,
       bio: data.bio || null,
     },
@@ -69,6 +77,10 @@ export async function updateInstructor(
     email?: string
     phone?: string
     photoUrl?: string
+    idType?: string
+    idNumber?: string
+    hasEps?: boolean
+    epsName?: string
     specialty?: string
     bio?: string
     isActive?: boolean
@@ -82,6 +94,10 @@ export async function updateInstructor(
       email: data.email || null,
       phone: data.phone || null,
       photoUrl: data.photoUrl || null,
+      idType: data.idType || null,
+      idNumber: data.idNumber || null,
+      hasEps: data.hasEps ?? false,
+      epsName: data.epsName || null,
       specialty: data.specialty || null,
       bio: data.bio || null,
       isActive: data.isActive ?? true,
