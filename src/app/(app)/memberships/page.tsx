@@ -9,6 +9,7 @@ import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MembershipActions } from "@/components/memberships/membership-actions"
 import { WhatsAppReminderButton } from "@/components/memberships/whatsapp-reminder-button"
+import { FreezeButton } from "@/components/memberships/freeze-button"
 
 async function MembershipsList({ status }: { status?: string }) {
   const memberships = await getMemberships(status ? { status } : undefined)
@@ -44,10 +45,11 @@ async function MembershipsList({ status }: { status?: string }) {
         const totalPaid = ms.payments.reduce((sum, p) => sum + Number(p.amount), 0)
         const isExpiringSoon = ms.status === "ACTIVE" && colors.dot === "bg-yellow-500"
         const isExpired = ms.status === "EXPIRED"
+        const isFrozen = ms.status === "FROZEN"
         const showReminder = (isExpiringSoon || isExpired) && !!ms.member.phone
 
         return (
-          <Card key={ms.id} className={`border ${isExpiringSoon ? "border-yellow-200" : "border-gray-200"}`}>
+          <Card key={ms.id} className={`border ${isExpiringSoon ? "border-yellow-200" : isFrozen ? "border-blue-200" : "border-gray-200"}`}>
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
                 {/* Avatar */}
@@ -92,6 +94,11 @@ async function MembershipsList({ status }: { status?: string }) {
                       <span className="text-xs text-yellow-700 font-medium">Vence pronto</span>
                     </div>
                   )}
+                  {isFrozen && (
+                    <div className="flex items-center gap-1 mt-2">
+                      <span className="text-xs text-blue-700 font-medium">❄️ Membresía congelada</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -112,6 +119,7 @@ async function MembershipsList({ status }: { status?: string }) {
                     expiresAt={new Date(ms.endDate)}
                   />
                 )}
+                <FreezeButton membershipId={ms.id} status={ms.status} />
                 <MembershipActions membershipId={ms.id} status={ms.status} />
               </div>
             </CardContent>
@@ -134,6 +142,7 @@ export default async function MembershipsPage({
     { label: "Activas", value: "ACTIVE" },
     { label: "Vencidas", value: "EXPIRED" },
     { label: "Pendientes", value: "PENDING" },
+    { label: "❄️ Congeladas", value: "FROZEN" },
   ]
 
   return (

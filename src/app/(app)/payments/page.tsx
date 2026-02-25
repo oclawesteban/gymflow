@@ -7,6 +7,8 @@ import { Plus, DollarSign, CreditCard, Banknote } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ExportButton } from "@/components/exports/export-button"
+import { exportPayments } from "@/lib/actions/exports"
 
 const METHOD_ICONS: Record<string, string> = {
   CASH: "💵",
@@ -86,13 +88,20 @@ export default function PaymentsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Pagos</h1>
           <p className="text-gray-500 text-sm mt-0.5">Historial de pagos de membresías</p>
         </div>
-        <Link href="/payments/new">
-          <Button className="bg-blue-600 hover:bg-blue-700 min-h-[48px] gap-2">
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Registrar Pago</span>
-            <span className="sm:hidden">Pago</span>
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ExportButton
+            label="Exportar"
+            filename="pagos"
+            fetchData={exportPayments}
+          />
+          <Link href="/payments/new">
+            <Button className="bg-blue-600 hover:bg-blue-700 min-h-[48px] gap-2">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Registrar Pago</span>
+              <span className="sm:hidden">Pago</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Suspense fallback={

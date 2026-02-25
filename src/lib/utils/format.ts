@@ -37,6 +37,7 @@ export function getMembershipStatusLabel(status: string): string {
     EXPIRED: "Vencida",
     PENDING: "Pendiente",
     CANCELLED: "Cancelada",
+    FROZEN: "Congelada",
   }
   return labels[status] ?? status
 }
@@ -64,5 +65,6 @@ export function getMembershipStatusColor(status: string, endDate?: Date | string
   }
   if (status === "EXPIRED") return { badge: "bg-red-100 text-red-800 border-red-200", dot: "bg-red-500" }
   if (status === "PENDING") return { badge: "bg-blue-100 text-blue-800 border-blue-200", dot: "bg-blue-500" }
+  if (status === "FROZEN") return { badge: "bg-blue-100 text-blue-700 border-blue-200", dot: "bg-blue-400" }
   return { badge: "bg-gray-100 text-gray-800 border-gray-200", dot: "bg-gray-400" }
 }

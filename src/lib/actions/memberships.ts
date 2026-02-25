@@ -128,6 +128,57 @@ export async function updateMembershipStatus(id: string, status: "ACTIVE" | "EXP
   return { success: true }
 }
 
+export async function freezeMembership(membershipId: string, frozenUntil: Date) {
+  const gymId = await getGymId()
+
+  const membership = await prisma.membership.findFirst({
+    where: { id: membershipId, member: { gymId } },
+  })
+  if (!membership) throw new Error("Membresía no encontrada")
+
+  await prisma.membership.update({
+    where: { id: membershipId },
+    data: {
+      status: "FROZEN",
+      frozenAt: new Date(),
+      frozenUntil,
+    },
+  })
+
+  revalidatePath("/memberships")
+  revalidatePath("/dashboard")
+  return { success: true }
+}
+
+export async function unfreezeMembership(membershipId: string) {
+  const gymId = await getGymId()
+
+  const membership = await prisma.membership.findFirst({
+    where: { id: membershipId, member: { gymId } },
+  })
+  if (!membership) throw new Error("Membresía no encontrada")
+
+  const now = new Date()
+  const frozenAt = membership.frozenAt ?? now
+  const diasCongelados = Math.ceil((now.getTime() - frozenAt.getTime()) / 86400000)
+
+  const nuevaFechaFin = addDays(membership.endDate, diasCongelados)
+
+  await prisma.membership.update({
+    where: { id: membershipId },
+    data: {
+      status: "ACTIVE",
+      endDate: nuevaFechaFin,
+      frozenAt: null,
+      frozenUntil: null,
+    },
+  })
+
+  revalidatePath("/memberships")
+  revalidatePath("/dashboard")
+  return { success: true }
+}
+
 export async function syncExpiredMemberships() {
   const gymId = await getGymId()
   const now = new Date()

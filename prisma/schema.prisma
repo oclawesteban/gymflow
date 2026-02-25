@@ -106,18 +106,20 @@ model Plan {
 }
 
 model Membership {
-  id         String           @id @default(cuid())
-  memberId   String
-  planId     String
-  startDate  DateTime
-  endDate    DateTime
-  status     MembershipStatus @default(ACTIVE)
-  notes      String?
-  member     Member           @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  plan       Plan             @relation(fields: [planId], references: [id])
-  payments   Payment[]
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  id          String           @id @default(cuid())
+  memberId    String
+  planId      String
+  startDate   DateTime
+  endDate     DateTime
+  status      MembershipStatus @default(ACTIVE)
+  notes       String?
+  frozenAt    DateTime?
+  frozenUntil DateTime?
+  member      Member           @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  plan        Plan             @relation(fields: [planId], references: [id])
+  payments    Payment[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model Payment {
@@ -152,6 +154,7 @@ enum MembershipStatus {
   EXPIRED
   PENDING
   CANCELLED
+  FROZEN
 }
 
 enum PaymentMethod {

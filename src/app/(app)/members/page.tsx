@@ -8,6 +8,9 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MembersSearch } from "@/components/members/members-search"
+import { MemberQR } from "@/components/members/member-qr"
+import { ExportButton } from "@/components/exports/export-button"
+import { exportMembers } from "@/lib/actions/exports"
 
 async function MembersList({ query }: { query?: string }) {
   const members = await getMembers(query ? { query } : undefined)
@@ -52,9 +55,9 @@ async function MembersList({ query }: { query?: string }) {
           : null
 
         return (
-          <Link key={member.id} href={`/members/${member.id}`}>
-            <Card className="hover:shadow-md transition-shadow cursor-pointer border border-gray-200">
-              <CardContent className="p-4">
+          <Card key={member.id} className="hover:shadow-md transition-shadow border border-gray-200">
+            <CardContent className="p-4">
+              <Link href={`/members/${member.id}`} className="block">
                 <div className="flex items-start gap-3">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-lg flex-shrink-0 overflow-hidden">
                     {member.photoUrl ? (
@@ -95,9 +98,13 @@ async function MembersList({ query }: { query?: string }) {
                     )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </Link>
+              </Link>
+              {/* Acciones rápidas */}
+              <div className="flex justify-end mt-3 pt-2 border-t border-gray-100">
+                <MemberQR memberId={member.id} memberName={member.name} />
+              </div>
+            </CardContent>
+          </Card>
         )
       })}
     </div>
@@ -118,13 +125,20 @@ export default async function MembersPage({
           <h1 className="text-2xl font-bold text-gray-900">Miembros</h1>
           <p className="text-gray-500 text-sm mt-0.5">Gestiona los miembros de tu gimnasio</p>
         </div>
-        <Link href="/members/new">
-          <Button className="bg-blue-600 hover:bg-blue-700 min-h-[48px] gap-2">
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Nuevo Miembro</span>
-            <span className="sm:hidden">Nuevo</span>
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ExportButton
+            label="Exportar"
+            filename="miembros"
+            fetchData={exportMembers}
+          />
+          <Link href="/members/new">
+            <Button className="bg-blue-600 hover:bg-blue-700 min-h-[48px] gap-2">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Nuevo Miembro</span>
+              <span className="sm:hidden">Nuevo</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Campo de búsqueda */}

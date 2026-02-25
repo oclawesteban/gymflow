@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Phone, Mail, AlertCircle, Calendar, CreditCard, DollarSign, RefreshCw, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { MemberActions } from "@/components/members/member-actions"
+import { MemberQR } from "@/components/members/member-qr"
 
 export default async function MemberDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -62,6 +63,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
             Nueva Membresía
           </Button>
         </Link>
+        <MemberQR memberId={member.id} memberName={member.name} />
         <MemberActions memberId={member.id} memberName={member.name} />
       </div>
 
