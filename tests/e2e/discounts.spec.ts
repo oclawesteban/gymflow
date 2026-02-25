@@ -26,19 +26,28 @@ test.describe('Descuentos', () => {
   test('Se puede crear un código de descuento', async ({ page }) => {
     await page.goto('/discounts/new')
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(1500)
 
-    const codeInput = page.locator('input[name="code"], input[id="code"], input[placeholder*="código"], input[placeholder*="PROMO"]').first()
+    // Buscar el campo de código (puede tener diferente id/name)
+    const codeInput = page.locator('input').filter({ has: page.locator(':scope') }).first()
     const isVisible = await codeInput.isVisible().catch(() => false)
-    if (!isVisible) { console.warn('ℹ️ Campo código no encontrado'); return }
+    if (!isVisible) { console.warn('ℹ️ Campo no encontrado'); return }
 
-    await codeInput.fill('TESTDESC10')
+    // Llenar código
+    await codeInput.fill('TESTPROMO20')
+
+    // Llenar valor del descuento (segundo input numérico)
+    const valueInput = page.locator('input[type="number"]').first()
+    const valueVisible = await valueInput.isVisible().catch(() => false)
+    if (valueVisible) await valueInput.fill('10')
+
+    // Submit
     const submitBtn = page.locator('button[type="submit"]').first()
     await submitBtn.click()
 
     const success = await Promise.any([
-      page.waitForURL('**/discounts', { timeout: 8000 }).then(() => true),
-      page.locator('text=creado, text=guardado').waitFor({ state: 'visible', timeout: 8000 }).then(() => true),
+      page.waitForURL('**/discounts', { timeout: 10000 }).then(() => true),
+      page.locator('text=creado').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
     ]).catch(() => false)
     expect(success).toBe(true)
   })

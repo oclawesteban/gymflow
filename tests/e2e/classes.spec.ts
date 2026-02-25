@@ -16,9 +16,11 @@ test.describe('Clases grupales', () => {
   test('Formulario de nueva clase carga', async ({ page }) => {
     await page.goto('/classes/new')
     await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(1500)
     const visible = await Promise.any([
-      page.locator('input[name="name"], input[id="name"]').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
-      page.locator('text=Nombre de la clase').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
+      page.locator('input[id="nombre"]').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
+      page.locator('input[placeholder*="CrossFit"]').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
+      page.locator('label:has-text("Nombre")').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
     ]).catch(() => false)
     expect(visible).toBe(true)
   })

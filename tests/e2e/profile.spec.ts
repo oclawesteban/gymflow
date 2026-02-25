@@ -27,10 +27,11 @@ test.describe('Perfil de usuario', () => {
   test('Sección de cambio de contraseña es visible', async ({ page }) => {
     await page.goto('/profile')
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(1500)
     const pwSection = await Promise.any([
-      page.locator('text=Cambiar contraseña').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
-      page.locator('text=Nueva contraseña').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
+      page.locator('text=Cambiar Contraseña').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
+      page.locator('text=Contraseña actual').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
+      page.locator('input[id="currentPassword"]').waitFor({ state: 'visible', timeout: 10000 }).then(() => true),
     ]).catch(() => false)
     expect(pwSection).toBe(true)
   })
