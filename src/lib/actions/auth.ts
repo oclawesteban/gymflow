@@ -48,7 +48,13 @@ export async function loginUser(data: { email: string; password: string }) {
       redirectTo: "/dashboard",
     })
   } catch (error: any) {
-    if (error?.message?.includes("CredentialsSignin")) {
+    // En NextAuth v5, el error de credenciales tiene type="CredentialsSignin"
+    // El message contiene la URL en minúsculas: "...#credentialssignin"
+    // Por eso verificamos `type` (confiable) y también el message en minúsculas como fallback
+    if (
+      error?.type === "CredentialsSignin" ||
+      error?.message?.toLowerCase().includes("credentialssignin")
+    ) {
       return { error: "Correo o contraseña incorrectos" }
     }
     throw error

@@ -12,10 +12,22 @@ async function getGymId() {
   return gym.id
 }
 
-export async function getMembers() {
+export async function getMembers(options?: { query?: string }) {
   const gymId = await getGymId()
+  const query = options?.query?.trim()
   return prisma.member.findMany({
-    where: { gymId },
+    where: {
+      gymId,
+      ...(query
+        ? {
+            OR: [
+              { name: { contains: query, mode: "insensitive" } },
+              { email: { contains: query, mode: "insensitive" } },
+              { phone: { contains: query } },
+            ],
+          }
+        : {}),
+    },
     include: {
       memberships: {
         orderBy: { createdAt: "desc" },

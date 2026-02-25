@@ -27,8 +27,12 @@ export default function LoginPage() {
         password: data.get("password") as string,
       })
       if (result?.error) setError(result.error)
-    } catch {
-      // signIn redirects on success, so errors here are real errors
+    } catch (err: any) {
+      // signIn hace redirect en éxito (NEXT_REDIRECT) — eso no es un error real.
+      // Cualquier otro error no capturado en loginUser se muestra aquí.
+      if (!err?.message?.includes("NEXT_REDIRECT")) {
+        setError("Ocurrió un error al iniciar sesión. Intenta de nuevo.")
+      }
     } finally {
       setLoading(false)
     }

@@ -3,13 +3,14 @@ import { formatDate, getMembershipStatusColor, getMembershipStatusLabel } from "
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Users, Plus, Phone, Mail, Search } from "lucide-react"
+import { Users, Plus, Phone, Mail } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { MembersSearch } from "@/components/members/members-search"
 
-async function MembersList() {
-  const members = await getMembers()
+async function MembersList({ query }: { query?: string }) {
+  const members = await getMembers(query ? { query } : undefined)
 
   if (members.length === 0) {
     return (
@@ -17,16 +18,27 @@ async function MembersList() {
         <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
           <Users className="h-10 w-10 text-blue-400" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Aún no hay miembros</h3>
-        <p className="text-gray-500 mb-6 max-w-sm mx-auto">
-          Comienza agregando el primer miembro de tu gimnasio.
-        </p>
-        <Link href="/members/new">
-          <Button className="bg-blue-600 hover:bg-blue-700 min-h-[48px] px-6 gap-2">
-            <Plus className="h-4 w-4" />
-            Agregar Primer Miembro
-          </Button>
-        </Link>
+        {query ? (
+          <>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Sin resultados</h3>
+            <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+              No se encontraron miembros que coincidan con &ldquo;{query}&rdquo;.
+            </p>
+          </>
+        ) : (
+          <>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Aún no hay miembros</h3>
+            <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+              Comienza agregando el primer miembro de tu gimnasio.
+            </p>
+            <Link href="/members/new">
+              <Button className="bg-blue-600 hover:bg-blue-700 min-h-[48px] px-6 gap-2">
+                <Plus className="h-4 w-4" />
+                Agregar Primer Miembro
+              </Button>
+            </Link>
+          </>
+        )}
       </div>
     )
   }
@@ -92,7 +104,13 @@ async function MembersList() {
   )
 }
 
-export default function MembersPage() {
+export default async function MembersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>
+}) {
+  const { q } = await searchParams
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -109,12 +127,15 @@ export default function MembersPage() {
         </Link>
       </div>
 
+      {/* Campo de búsqueda */}
+      <MembersSearch defaultValue={q ?? ""} />
+
       <Suspense fallback={
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
       }>
-        <MembersList />
+        <MembersList query={q} />
       </Suspense>
     </div>
   )
