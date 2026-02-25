@@ -36,6 +36,8 @@ export async function createPayment(data: {
   method?: "CASH" | "CARD" | "TRANSFER" | "NEQUI" | "DAVIPLATA" | "OTHER"
   reference?: string
   notes?: string
+  promoCodeId?: string
+  discountAmount?: number
 }) {
   const gymId = await getGymId()
 
@@ -51,9 +53,19 @@ export async function createPayment(data: {
       method: data.method ?? "CASH",
       reference: data.reference,
       notes: data.notes,
+      promoCodeId: data.promoCodeId ?? null,
+      discountAmount: data.discountAmount ?? null,
     },
     include: { membership: { include: { member: true, plan: true } } },
   })
+
+  // Incrementar usedCount del código promo
+  if (data.promoCodeId) {
+    await prisma.promoCode.update({
+      where: { id: data.promoCodeId },
+      data: { usedCount: { increment: 1 } },
+    })
+  }
 
   revalidatePath("/payments")
   revalidatePath("/dashboard")

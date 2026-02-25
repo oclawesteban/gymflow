@@ -177,3 +177,111 @@ export async function getReportKPIs() {
     })),
   }
 }
+
+// ─── ANALYTICS DE ASISTENCIA ────────────────────────────────────────────────
+
+// Heatmap: asistencias agrupadas por dayOfWeek (0-6) y hour (0-23)
+export async function getAttendanceHeatmap() {
+  const gymId = await getGymId()
+
+  const records = await prisma.attendance.findMany({
+    where: { member: { gymId } },
+    select: { checkedIn: true },
+  })
+
+  // Crear mapa dayOfWeek × hour → count
+  const map: Record<string, number> = {}
+  for (const r of records) {
+    const d = r.checkedIn.getDay()    // 0=Dom … 6=Sáb
+    const h = r.checkedIn.getHours()  // 0-23
+    const key = `${d}-${h}`
+    map[key] = (map[key] ?? 0) + 1
+  }
+
+  return map
+}
+
+// Top 10 socios con más asistencias en los últimos 30 días
+export async function getTopMembers(limit = 10) {
+  const gymId = await getGymId()
+  const since = new Date()
+  since.setDate(since.getDate() - 30)
+
+  const counts = await prisma.attendance.groupBy({
+    by: ["memberId"],
+    where: {
+      member: { gymId },
+      checkedIn: { gte: since },
+    },
+    _count: { id: true },
+    orderBy: { _count: { id: "desc" } },
+    take: limit,
+  })
+
+  if (counts.length === 0) return []
+
+  const memberIds = counts.map((c) => c.memberId)
+  const members = await prisma.member.findMany({
+    where: { id: { in: memberIds } },
+    select: {
+      id: true,
+      name: true,
+      photoUrl: true,
+      memberships: {
+        where: { status: "ACTIVE" },
+        select: { startDate: true, endDate: true },
+        take: 1,
+      },
+    },
+  })
+
+  return counts.map((c) => {
+    const member = members.find((m) => m.id === c.memberId)
+    const visits = c._count.id
+    const membership = member?.memberships[0]
+    let percentage = 0
+    if (membership) {
+      const start = new Date(membership.startDate)
+      const end = new Date(membership.endDate)
+      const totalDays = Math.max(
+        1,
+        Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+      )
+      percentage = Math.min(100, Math.round((visits / totalDays) * 100))
+    }
+    return {
+      memberId: c.memberId,
+      name: member?.name ?? "Desconocido",
+      photoUrl: member?.photoUrl ?? null,
+      visits,
+      percentage,
+    }
+  })
+}
+
+// Tendencia de asistencia: promedio por día en las últimas 4 semanas
+export async function getWeeklyAttendanceTrend() {
+  const gymId = await getGymId()
+  const now = new Date()
+  const result: { semana: string; promedio: number; total: number }[] = []
+
+  for (let i = 3; i >= 0; i--) {
+    const weekStart = startOfWeek(addDays(now, -i * 7), { weekStartsOn: 1 })
+    const weekEnd = endOfWeek(addDays(now, -i * 7), { weekStartsOn: 1 })
+
+    const count = await prisma.attendance.count({
+      where: {
+        member: { gymId },
+        checkedIn: { gte: weekStart, lte: weekEnd },
+      },
+    })
+
+    result.push({
+      semana: format(weekStart, "dd MMM", { locale: es }),
+      total: count,
+      promedio: Math.round(count / 7),
+    })
+  }
+
+  return result
+}

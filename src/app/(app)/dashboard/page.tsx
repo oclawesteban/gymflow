@@ -1,4 +1,5 @@
-import { getDashboardStats } from "@/lib/actions/dashboard"
+import { getDashboardStats, getOnboardingStatus } from "@/lib/actions/dashboard"
+import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard"
 import { getExpiringMemberships } from "@/lib/actions/memberships"
 import { formatCurrency, formatRelative } from "@/lib/utils/format"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -260,11 +261,16 @@ async function DashboardContent() {
   )
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { shouldShow, gymName } = await getOnboardingStatus()
+
   return (
-    <Suspense fallback={<DashboardSkeleton />}>
-      <DashboardContent />
-    </Suspense>
+    <>
+      <OnboardingWizard shouldShow={shouldShow} gymName={gymName} />
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardContent />
+      </Suspense>
+    </>
   )
 }
 

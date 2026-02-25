@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClass } from "@/lib/actions/classes"
+import { getInstructorsForSelect } from "@/lib/actions/instructors"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 import { ArrowLeft, Loader2, Save, Users2 } from "lucide-react"
 import Link from "next/link"
 import {
@@ -17,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "sonner"
 
 const DIAS = [
   { value: "1", label: "Lunes" },
@@ -40,52 +43,60 @@ const COLORES = [
   { value: "#64748B", label: "Gris" },
 ]
 
+type InstructorOption = { id: string; name: string; specialty: string | null }
+
 export default function NuevaClasePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
 
   const [nombre, setNombre] = useState("")
   const [descripcion, setDescripcion] = useState("")
-  const [instructor, setInstructor] = useState("")
+  const [instructorId, setInstructorId] = useState("")
   const [capacidad, setCapacidad] = useState("20")
   const [dia, setDia] = useState("1")
   const [horaInicio, setHoraInicio] = useState("07:00")
   const [horaFin, setHoraFin] = useState("08:00")
   const [color, setColor] = useState("#3B82F6")
+  const [instructors, setInstructors] = useState<InstructorOption[]>([])
+
+  useEffect(() => {
+    getInstructorsForSelect().then(setInstructors).catch(() => {})
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError("")
 
     if (!nombre.trim()) {
-      setError("El nombre es requerido")
+      toast.error("El nombre es requerido")
       return
     }
 
     const capNum = parseInt(capacidad)
     if (isNaN(capNum) || capNum < 1) {
-      setError("La capacidad debe ser un número mayor a 0")
+      toast.error("La capacidad debe ser un número mayor a 0")
       return
     }
 
     setLoading(true)
     try {
+      const selectedInstructor = instructors.find((i) => i.id === instructorId)
       await createClass({
         name: nombre.trim(),
         description: descripcion.trim() || undefined,
-        instructor: instructor.trim() || undefined,
+        instructorId: instructorId || undefined,
+        instructor: selectedInstructor?.name || undefined,
         capacity: capNum,
         dayOfWeek: parseInt(dia),
         startTime: horaInicio,
         endTime: horaFin,
         color,
       })
+      toast.success("Clase creada exitosamente")
       router.push("/classes")
       router.refresh()
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error al crear la clase"
-      setError(msg)
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -93,7 +104,6 @@ export default function NuevaClasePage() {
 
   return (
     <div className="max-w-xl mx-auto space-y-6">
-      {/* Encabezado */}
       <div className="flex items-center gap-4">
         <Link href="/classes">
           <Button variant="ghost" size="icon" className="h-10 w-10">
@@ -101,8 +111,10 @@ export default function NuevaClasePage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nueva Clase</h1>
-          <p className="text-gray-500 text-sm">Agrega una clase al horario del gym</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Nueva Clase</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Agrega una clase al horario del gym
+          </p>
         </div>
       </div>
 
@@ -115,7 +127,6 @@ export default function NuevaClasePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Nombre */}
             <div className="space-y-2">
               <Label htmlFor="nombre">Nombre *</Label>
               <Input
@@ -128,7 +139,6 @@ export default function NuevaClasePage() {
               />
             </div>
 
-            {/* Descripción */}
             <div className="space-y-2">
               <Label htmlFor="descripcion">Descripción</Label>
               <Textarea
@@ -141,16 +151,32 @@ export default function NuevaClasePage() {
               />
             </div>
 
-            {/* Instructor */}
             <div className="space-y-2">
-              <Label htmlFor="instructor">Instructor</Label>
-              <Input
-                id="instructor"
-                placeholder="Nombre del instructor"
-                value={instructor}
-                onChange={(e) => setInstructor(e.target.value)}
-                className="min-h-[48px] text-base"
-              />
+              <Label>Instructor</Label>
+              {instructors.length > 0 ? (
+                <SearchableSelect
+                  options={[
+                    { value: "", label: "Sin instructor asignado" },
+                    ...instructors.map((i) => ({
+                      value: i.id,
+                      label: i.name,
+                      sublabel: i.specialty ?? undefined,
+                    })),
+                  ]}
+                  value={instructorId}
+                  onValueChange={setInstructorId}
+                  placeholder="Selecciona un instructor..."
+                  searchPlaceholder="Buscar instructor..."
+                  emptyText="No se encontró ningún instructor."
+                />
+              ) : (
+                <div className="text-sm text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+                  No hay instructores registrados.{" "}
+                  <Link href="/instructors/new" className="text-blue-600 hover:underline">
+                    Agregar instructor
+                  </Link>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -160,7 +186,6 @@ export default function NuevaClasePage() {
             <CardTitle className="text-base">Horario y Capacidad</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Día de la semana */}
             <div className="space-y-2">
               <Label>Día de la semana</Label>
               <Select value={dia} onValueChange={setDia}>
@@ -177,7 +202,6 @@ export default function NuevaClasePage() {
               </Select>
             </div>
 
-            {/* Horas */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="inicio">Hora de inicio</Label>
@@ -201,7 +225,6 @@ export default function NuevaClasePage() {
               </div>
             </div>
 
-            {/* Capacidad */}
             <div className="space-y-2">
               <Label htmlFor="capacidad">Capacidad máxima</Label>
               <Input
@@ -238,18 +261,8 @@ export default function NuevaClasePage() {
                 />
               ))}
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Color seleccionado:{" "}
-              <span className="font-mono font-semibold">{color}</span>
-            </p>
           </CardContent>
         </Card>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
 
         <div className="flex gap-3 pb-8">
           <Link href="/classes" className="flex-1">

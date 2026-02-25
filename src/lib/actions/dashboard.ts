@@ -91,3 +91,19 @@ export async function getDashboardStats() {
     recentAttendance,
   }
 }
+
+export async function getOnboardingStatus() {
+  try {
+    const gym = await getGymId()
+    const [memberCount, planCount] = await Promise.all([
+      prisma.member.count({ where: { gymId: gym.id } }),
+      prisma.plan.count({ where: { gymId: gym.id } }),
+    ])
+    return {
+      shouldShow: memberCount === 0 && planCount === 0,
+      gymName: gym.name,
+    }
+  } catch {
+    return { shouldShow: false, gymName: "" }
+  }
+}

@@ -103,6 +103,14 @@ export default function LoginPage() {
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 Entrar
               </Button>
+              <div className="text-center">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
+                >
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
             </form>
           </CardContent>
           <CardFooter className="justify-center pt-0">

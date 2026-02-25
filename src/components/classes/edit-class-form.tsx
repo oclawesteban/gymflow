@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { updateClass } from "@/lib/actions/classes"
+import { getInstructorsForSelect } from "@/lib/actions/instructors"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 import { Loader2, Save, Users2 } from "lucide-react"
 import {
   Select,
@@ -17,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import Link from "next/link"
+import { toast } from "sonner"
 
 const DIAS = [
   { value: "1", label: "Lunes" },
@@ -45,6 +48,7 @@ interface ClaseData {
   name: string
   description: string | null
   instructor: string | null
+  instructorId?: string | null
   capacity: number
   dayOfWeek: number
   startTime: string
@@ -52,47 +56,55 @@ interface ClaseData {
   color: string
 }
 
+type InstructorOption = { id: string; name: string; specialty: string | null }
+
 export function EditClassForm({ clase }: { clase: ClaseData }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
 
   const [nombre, setNombre] = useState(clase.name)
   const [descripcion, setDescripcion] = useState(clase.description ?? "")
-  const [instructor, setInstructor] = useState(clase.instructor ?? "")
+  const [instructorId, setInstructorId] = useState(clase.instructorId ?? "")
   const [capacidad, setCapacidad] = useState(String(clase.capacity))
   const [dia, setDia] = useState(String(clase.dayOfWeek))
   const [horaInicio, setHoraInicio] = useState(clase.startTime)
   const [horaFin, setHoraFin] = useState(clase.endTime)
   const [color, setColor] = useState(clase.color)
+  const [instructors, setInstructors] = useState<InstructorOption[]>([])
+
+  useEffect(() => {
+    getInstructorsForSelect().then(setInstructors).catch(() => {})
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError("")
 
     const capNum = parseInt(capacidad)
     if (isNaN(capNum) || capNum < 1) {
-      setError("La capacidad debe ser un número mayor a 0")
+      toast.error("La capacidad debe ser un número mayor a 0")
       return
     }
 
     setLoading(true)
     try {
+      const selectedInstructor = instructors.find((i) => i.id === instructorId)
       await updateClass(clase.id, {
         name: nombre.trim(),
         description: descripcion.trim() || undefined,
-        instructor: instructor.trim() || undefined,
+        instructorId: instructorId || null,
+        instructor: selectedInstructor?.name || undefined,
         capacity: capNum,
         dayOfWeek: parseInt(dia),
         startTime: horaInicio,
         endTime: horaFin,
         color,
       })
+      toast.success("Clase actualizada")
       router.push(`/classes/${clase.id}`)
       router.refresh()
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error al guardar"
-      setError(msg)
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -128,11 +140,30 @@ export function EditClassForm({ clase }: { clase: ClaseData }) {
           </div>
           <div className="space-y-2">
             <Label>Instructor</Label>
-            <Input
-              value={instructor}
-              onChange={(e) => setInstructor(e.target.value)}
-              className="min-h-[48px] text-base"
-            />
+            {instructors.length > 0 ? (
+              <SearchableSelect
+                options={[
+                  { value: "", label: "Sin instructor asignado" },
+                  ...instructors.map((i) => ({
+                    value: i.id,
+                    label: i.name,
+                    sublabel: i.specialty ?? undefined,
+                  })),
+                ]}
+                value={instructorId}
+                onValueChange={setInstructorId}
+                placeholder="Selecciona un instructor..."
+                searchPlaceholder="Buscar instructor..."
+                emptyText="No se encontró ningún instructor."
+              />
+            ) : (
+              <div className="text-sm text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+                No hay instructores.{" "}
+                <Link href="/instructors/new" className="text-blue-600 hover:underline">
+                  Agregar
+                </Link>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -214,12 +245,6 @@ export function EditClassForm({ clase }: { clase: ClaseData }) {
           </div>
         </CardContent>
       </Card>
-
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-          {error}
-        </div>
-      )}
 
       <div className="flex gap-3 pb-8">
         <Link href={`/classes/${clase.id}`} className="flex-1">

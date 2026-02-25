@@ -48,6 +48,7 @@ export async function createClass(data: {
   name: string
   description?: string
   instructor?: string
+  instructorId?: string
   capacity: number
   dayOfWeek: number
   startTime: string
@@ -62,6 +63,7 @@ export async function createClass(data: {
       name: data.name,
       description: data.description,
       instructor: data.instructor,
+      instructorId: data.instructorId ?? null,
       capacity: data.capacity,
       dayOfWeek: data.dayOfWeek,
       startTime: data.startTime,
@@ -82,6 +84,7 @@ export async function updateClass(
     name?: string
     description?: string
     instructor?: string
+    instructorId?: string | null
     capacity?: number
     dayOfWeek?: number
     startTime?: string

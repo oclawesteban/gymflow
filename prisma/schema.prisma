@@ -15,6 +15,9 @@ model User {
   password      String?
   image         String?
   role          Role      @default(OWNER)
+  photoUrl      String?
+  bio           String?
+  phone         String?
   gym           Gym?
   accounts      Account[]
   sessions      Session[]
@@ -57,7 +60,7 @@ model VerificationToken {
 }
 
 model Gym {
-  id           String      @id @default(cuid())
+  id           String       @id @default(cuid())
   name         String
   address      String?
   phone        String?
@@ -66,13 +69,15 @@ model Gym {
   description  String?
   logoUrl      String?
   city         String?
-  ownerId      String      @unique
-  owner        User        @relation(fields: [ownerId], references: [id])
+  ownerId      String       @unique
+  owner        User         @relation(fields: [ownerId], references: [id])
   members      Member[]
   plans        Plan[]
   classes      GymClass[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  promoCodes   PromoCode[]
+  instructors  Instructor[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model Member {
@@ -127,15 +132,18 @@ model Membership {
 }
 
 model Payment {
-  id           String        @id @default(cuid())
-  membershipId String
-  amount       Decimal       @db.Decimal(10, 2)
-  method       PaymentMethod @default(CASH)
-  reference    String?
-  notes        String?
-  paidAt       DateTime      @default(now())
-  membership   Membership    @relation(fields: [membershipId], references: [id], onDelete: Cascade)
-  createdAt    DateTime      @default(now())
+  id             String        @id @default(cuid())
+  membershipId   String
+  amount         Decimal       @db.Decimal(10, 2)
+  method         PaymentMethod @default(CASH)
+  reference      String?
+  notes          String?
+  promoCodeId    String?
+  discountAmount Decimal?      @db.Decimal(10, 2)
+  paidAt         DateTime      @default(now())
+  membership     Membership    @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  promoCode      PromoCode?    @relation(fields: [promoCodeId], references: [id])
+  createdAt      DateTime      @default(now())
 }
 
 model Attendance {
@@ -148,20 +156,22 @@ model Attendance {
 }
 
 model GymClass {
-  id          String         @id @default(cuid())
-  gymId       String
-  gym         Gym            @relation(fields: [gymId], references: [id], onDelete: Cascade)
-  name        String
-  description String?
-  instructor  String?
-  capacity    Int            @default(20)
-  dayOfWeek   Int            // 0=Domingo, 1=Lunes, ... 6=Sábado
-  startTime   String         // "07:00"
-  endTime     String         // "08:00"
-  color       String         @default("#3B82F6")
-  isActive    Boolean        @default(true)
-  bookings    ClassBooking[]
-  createdAt   DateTime       @default(now())
+  id           String         @id @default(cuid())
+  gymId        String
+  gym          Gym            @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  instructor   String?
+  instructorId String?
+  instructorRel Instructor?   @relation(fields: [instructorId], references: [id])
+  capacity     Int            @default(20)
+  dayOfWeek    Int            // 0=Domingo, 1=Lunes, ... 6=Sábado
+  startTime    String         // "07:00"
+  endTime      String         // "08:00"
+  color        String         @default("#3B82F6")
+  isActive     Boolean        @default(true)
+  bookings     ClassBooking[]
+  createdAt    DateTime       @default(now())
 }
 
 model ClassBooking {
@@ -175,6 +185,38 @@ model ClassBooking {
   createdAt DateTime @default(now())
 
   @@unique([classId, memberId, date])
+}
+
+model PromoCode {
+  id            String    @id @default(cuid())
+  gymId         String
+  gym           Gym       @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  code          String
+  description   String?
+  discountType  String    // "PERCENTAGE" | "FIXED"
+  discountValue Decimal   @db.Decimal(10, 2)
+  maxUses       Int?
+  usedCount     Int       @default(0)
+  validFrom     DateTime  @default(now())
+  validUntil    DateTime?
+  isActive      Boolean   @default(true)
+  payments      Payment[]
+  createdAt     DateTime  @default(now())
+}
+
+model Instructor {
+  id        String     @id @default(cuid())
+  gymId     String
+  gym       Gym        @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  phone     String?
+  photoUrl  String?
+  specialty String?
+  bio       String?
+  isActive  Boolean    @default(true)
+  classes   GymClass[]
+  createdAt DateTime   @default(now())
 }
 
 enum Role {
