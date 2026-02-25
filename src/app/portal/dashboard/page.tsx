@@ -5,8 +5,7 @@ import { formatDate, formatCurrency, getPaymentMethodLabel } from "@/lib/utils/f
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { MemberQR } from "@/components/members/member-qr"
-import { SelfCheckInButton } from "@/components/portal/self-checkin-button"
+import { TurnstileButton } from "@/components/portal/turnstile-button"
 import { PortalLogoutButton } from "@/components/portal/portal-logout-button"
 import {
   CreditCard,
@@ -143,18 +142,8 @@ export default async function PortalDashboardPage() {
         </Card>
       </div>
 
-      {/* Botón de check-in propio */}
-      <SelfCheckInButton memberId={member.id} />
-
-      {/* QR personal */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Mi QR de entrada</CardTitle>
-        </CardHeader>
-        <CardContent className="flex justify-center">
-          <MemberQR memberId={member.id} memberName={member.name} />
-        </CardContent>
-      </Card>
+      {/* Torniquete */}
+      <TurnstileButton hasActiveMembership={!!activeMembership} />
 
       {/* Últimos pagos */}
       <Card>

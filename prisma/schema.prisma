@@ -68,10 +68,11 @@ enum PlanTier {
 }
 
 model Gym {
-  id            String       @id @default(cuid())
-  gymCode       String       @unique
+  id            String        @id @default(cuid())
+  gymCode       String        @unique
+  accessApiKey  String?       @unique  // Clave secreta para ESP32
   name          String
-  planTier      PlanTier     @default(FREE)
+  planTier      PlanTier      @default(FREE)
   planExpiresAt DateTime?
   address      String?
   phone        String?
@@ -87,6 +88,7 @@ model Gym {
   classes      GymClass[]
   promoCodes   PromoCode[]
   instructors  Instructor[]
+  accessGrants AccessGrant[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 }
@@ -111,6 +113,7 @@ model Member {
   memberships      Membership[]
   attendance       Attendance[]
   bookings         ClassBooking[]
+  accessGrants     AccessGrant[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 }
@@ -259,4 +262,15 @@ enum PaymentMethod {
   NEQUI
   DAVIPLATA
   OTHER
+}
+
+model AccessGrant {
+  id        String    @id @default(cuid())
+  gymId     String
+  memberId  String
+  gym       Gym       @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  member    Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  expiresAt DateTime  // TTL de 30 segundos
+  usedAt    DateTime? // null = pendiente, DateTime = ya usado
+  createdAt DateTime  @default(now())
 }

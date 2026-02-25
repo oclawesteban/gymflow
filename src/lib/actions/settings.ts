@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
 import { generateGymCode, generateRandomCode } from "@/lib/utils/gym-code"
+import { randomBytes } from "crypto"
 
 // Obtener el gimnasio del usuario autenticado
 async function getGym() {
@@ -75,4 +76,18 @@ export async function regenerateGymCode() {
 
   revalidatePath("/settings")
   return { success: true, gymCode: updated.gymCode }
+}
+
+// Regenerar la API Key del ESP32
+export async function regenerateAccessApiKey() {
+  const gym = await getGym()
+  const newKey = "gf_" + randomBytes(24).toString("hex")
+
+  const updated = await prisma.gym.update({
+    where: { id: gym.id },
+    data: { accessApiKey: newKey },
+  })
+
+  revalidatePath("/settings")
+  return { success: true, accessApiKey: updated.accessApiKey }
 }
