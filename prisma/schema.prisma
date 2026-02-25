@@ -15,10 +15,11 @@ model User {
   password      String?
   image         String?
   role          Role      @default(OWNER)
-  photoUrl      String?
-  bio           String?
-  phone         String?
-  gym           Gym?
+  photoUrl          String?
+  bio               String?
+  phone             String?
+  passwordChangedAt DateTime?
+  gym               Gym?
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())

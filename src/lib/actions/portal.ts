@@ -5,16 +5,17 @@ import bcrypt from "bcryptjs"
 import { cookies } from "next/headers"
 import { SignJWT, jwtVerify } from "jose"
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || "gymflow-portal-secret-2024"
-)
+if (!process.env.AUTH_SECRET) {
+  throw new Error("AUTH_SECRET no está definido. Configura esta variable de entorno.")
+}
+const JWT_SECRET = new TextEncoder().encode(process.env.AUTH_SECRET)
 
 // ─── Helpers de JWT ────────────────────────────────────────────────
 
 export async function signPortalToken(memberId: string, gymId: string) {
   return new SignJWT({ memberId, gymId, type: "portal" })
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("7d")
+    .setExpirationTime("24h")
     .sign(JWT_SECRET)
 }
 
@@ -258,8 +259,33 @@ export async function getMemberPortalData(
 export async function selfCheckIn(
   memberId: string
 ): Promise<{ success: boolean; error?: string }> {
-  const member = await prisma.member.findUnique({ where: { id: memberId } })
+  const member = await prisma.member.findUnique({
+    where: { id: memberId },
+    include: {
+      memberships: {
+        where: { status: "ACTIVE" },
+        take: 1,
+      },
+    },
+  })
   if (!member) return { success: false, error: "Miembro no encontrado" }
+
+  // No permitir check-in sin membresía activa
+  if (member.memberships.length === 0) {
+    return { success: false, error: "No tienes una membresía activa" }
+  }
+
+  // Evitar check-ins duplicados en la misma hora
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
+  const recentCheckin = await prisma.attendance.findFirst({
+    where: {
+      memberId,
+      checkedIn: { gte: oneHourAgo },
+    },
+  })
+  if (recentCheckin) {
+    return { success: false, error: "Ya registraste una entrada en la última hora" }
+  }
 
   await prisma.attendance.create({
     data: {

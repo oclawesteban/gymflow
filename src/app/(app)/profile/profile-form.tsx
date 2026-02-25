@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { signOut } from "next-auth/react"
 import { updateProfile, changePassword } from "@/lib/actions/profile"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -68,11 +69,15 @@ export function ProfileForm({ user }: { user: ProfileUser }) {
     }
     setSavingPassword(true)
     try {
-      await changePassword(currentPassword, newPassword)
-      toast.success("Contraseña cambiada correctamente")
+      const result = await changePassword(currentPassword, newPassword)
+      toast.success("Contraseña cambiada. Redirigiendo al login...")
       setCurrentPassword("")
       setNewPassword("")
       setConfirmPassword("")
+      // Cerrar sesión para forzar re-autenticación con la nueva contraseña
+      if (result.requiresRelogin) {
+        setTimeout(() => signOut({ callbackUrl: "/login" }), 1500)
+      }
     } catch (err: any) {
       toast.error(err.message ?? "Error al cambiar la contraseña")
     } finally {

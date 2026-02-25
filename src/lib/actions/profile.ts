@@ -68,10 +68,15 @@ export async function changePassword(currentPassword: string, newPassword: strin
   const hashed = await bcrypt.hash(newPassword, 10)
   await prisma.user.update({
     where: { id: session.user.id },
-    data: { password: hashed },
+    data: {
+      password: hashed,
+      // Marcar timestamp — el JWT callback invalidará tokens emitidos antes de este momento
+      passwordChangedAt: new Date(),
+    },
   })
 
-  return { success: true }
+  // Retornar requiresRelogin para que el cliente cierre sesión
+  return { success: true, requiresRelogin: true }
 }
 
 export async function resetPasswordByEmail(email: string) {

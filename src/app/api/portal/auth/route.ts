@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { loginMemberPortal, registerMemberPortal } from "@/lib/actions/portal"
 
-// Duración de la cookie: 7 días
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+// Duración de la cookie: 24 horas
+const COOKIE_MAX_AGE = 60 * 60 * 24
 
 export async function POST(req: NextRequest) {
   try {
