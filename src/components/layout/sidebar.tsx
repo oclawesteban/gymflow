@@ -20,6 +20,7 @@ import {
   Users2,
   Tag,
   GraduationCap,
+  Zap,
 } from "lucide-react"
 import { useState } from "react"
 import { signOut, useSession } from "next-auth/react"
@@ -40,6 +41,7 @@ const navItems = [
   { href: "/calendar", label: "Vencimientos", icon: CalendarDays },
   { href: "/reports", label: "Reportes", icon: BarChart2 },
   { href: "/settings", label: "Configuración", icon: Settings },
+  { href: "/pricing", label: "Mi Plan", icon: Zap },
 ]
 
 function AdminAvatar({ name, photoUrl }: { name?: string | null; photoUrl?: string | null }) {

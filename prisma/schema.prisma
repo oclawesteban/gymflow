@@ -60,10 +60,19 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum PlanTier {
+  FREE
+  BASIC
+  PRO
+  MULTI
+}
+
 model Gym {
-  id           String       @id @default(cuid())
-  gymCode      String       @unique
-  name         String
+  id            String       @id @default(cuid())
+  gymCode       String       @unique
+  name          String
+  planTier      PlanTier     @default(FREE)
+  planExpiresAt DateTime?
   address      String?
   phone        String?
   whatsapp     String?

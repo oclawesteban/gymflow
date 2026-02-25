@@ -18,6 +18,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Suspense } from "react"
 import { ExpiringSection } from "@/components/memberships/expiring-section"
+import { PlanUsageCard } from "@/components/billing/plan-usage-card"
 
 async function DashboardContent() {
   let data
@@ -177,7 +178,7 @@ async function DashboardContent() {
       )}
 
       {/* Bottom Panels */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Recent Payments */}
         <Card>
           <CardHeader className="pb-3">
@@ -256,6 +257,9 @@ async function DashboardContent() {
             )}
           </CardContent>
         </Card>
+
+        {/* Plan usage */}
+        <PlanUsageCard />
       </div>
     </div>
   )

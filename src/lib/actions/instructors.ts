@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
+import { canAddInstructor } from "@/lib/actions/limits"
 
 async function getGymId() {
   const session = await auth()
@@ -49,6 +50,10 @@ export async function createInstructor(data: {
   bio?: string
 }) {
   const gymId = await getGymId()
+
+  // Verificar límite del plan
+  const limit = await canAddInstructor()
+  if (!limit.allowed) throw new Error(limit.reason)
 
   const instructor = await prisma.instructor.create({
     data: {

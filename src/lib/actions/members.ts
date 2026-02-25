@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
+import { canAddMember } from "@/lib/actions/limits"
 
 async function getGymId() {
   const session = await auth()
@@ -67,6 +68,11 @@ export async function createMember(data: {
   notes?: string
 }) {
   const gymId = await getGymId()
+
+  // Verificar límite del plan
+  const limit = await canAddMember()
+  if (!limit.allowed) throw new Error(limit.reason)
+
   const member = await prisma.member.create({
     data: { ...data, gymId },
   })
