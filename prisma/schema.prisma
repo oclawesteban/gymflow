@@ -62,6 +62,7 @@ model VerificationToken {
 
 model Gym {
   id           String       @id @default(cuid())
+  gymCode      String       @unique
   name         String
   address      String?
   phone        String?

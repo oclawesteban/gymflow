@@ -31,6 +31,7 @@ async function main() {
   const gym = await prisma.gym.create({
     data: {
       name: "GymFit Manizales",
+      gymCode: "GYM001",
       address: "Calle 50 #25-40, Centro, Manizales",
       phone: "3157890123",
       ownerId: owner.id,

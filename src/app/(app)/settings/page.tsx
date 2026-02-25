@@ -22,7 +22,7 @@ export default async function SettingsPage() {
       <SettingsForm gym={gym} />
 
       {/* Sección: Portal del Socio */}
-      <PortalSettings gymId={gym.id} gymName={gym.name} />
+      <PortalSettings gymId={gym.id} gymName={gym.name} gymCode={gym.gymCode} />
     </div>
   )
 }

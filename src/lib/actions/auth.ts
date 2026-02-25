@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { signIn } from "@/auth"
 import { redirect } from "next/navigation"
+import { generateGymCode, generateRandomCode } from "@/lib/utils/gym-code"
 
 export async function registerUser(data: {
   name: string
@@ -11,12 +12,17 @@ export async function registerUser(data: {
   password: string
   gymName: string
 }) {
-  const existing = await prisma.user.findUnique({ where: { email: data.email } })
-  if (existing) {
+  const existingUser = await prisma.user.findUnique({ where: { email: data.email } })
+  if (existingUser) {
     return { error: "Ya existe una cuenta con este correo" }
   }
 
   const hashed = await bcrypt.hash(data.password, 12)
+
+  // Generar código único para el gym
+  let gymCode = generateGymCode(data.gymName)
+  const existingCode = await prisma.gym.findUnique({ where: { gymCode } })
+  if (existingCode) gymCode = generateRandomCode()
 
   const user = await prisma.user.create({
     data: {
@@ -26,6 +32,7 @@ export async function registerUser(data: {
       gym: {
         create: {
           name: data.gymName,
+          gymCode,
         },
       },
     },

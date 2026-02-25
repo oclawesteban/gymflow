@@ -125,14 +125,15 @@ function RegisterForm() {
         <Label htmlFor="gymCode">Código del gimnasio</Label>
         <Input
           id="gymCode"
-          placeholder="Código que te dio el administrador"
+          placeholder="Ej: GYM274"
           value={gymCode}
-          onChange={(e) => setGymCode(e.target.value)}
+          onChange={(e) => setGymCode(e.target.value.toUpperCase())}
           required
-          className="min-h-[48px] text-base font-mono"
+          className="min-h-[48px] text-base font-mono tracking-widest uppercase"
+          maxLength={8}
         />
         <p className="text-xs text-gray-500">
-          El administrador de tu gimnasio debe darte este código
+          Es un código corto (ej: <span className="font-mono font-semibold">GYM274</span>). Pídeselo al administrador de tu gimnasio o usa el link que te compartió.
         </p>
       </div>
 

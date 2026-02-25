@@ -58,15 +58,17 @@ export async function registerMemberPortal(
     return { success: false, error: "La contraseña debe tener al menos 6 caracteres" }
   }
 
-  // Verificar que el gym existe
-  const gym = await prisma.gym.findUnique({ where: { id: gymCode } })
+  // Verificar que el gym existe por gymCode (legible) o por id (compatibilidad)
+  const gym = await prisma.gym.findFirst({
+    where: { OR: [{ gymCode: gymCode.toUpperCase() }, { id: gymCode }] },
+  })
   if (!gym) {
     return { success: false, error: "Código de gimnasio inválido" }
   }
 
   // Buscar miembro por email en ese gym
   const member = await prisma.member.findFirst({
-    where: { email, gymId: gymCode },
+    where: { email, gymId: gym.id },
   })
   if (!member) {
     return {

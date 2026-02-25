@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
+import { generateGymCode, generateRandomCode } from "@/lib/utils/gym-code"
 
 // Obtener el gimnasio del usuario autenticado
 async function getGym() {
@@ -54,4 +55,24 @@ export async function updateGymSettings(data: {
   revalidatePath("/dashboard")
 
   return { success: true, gym: updated }
+}
+
+// Regenerar el código del gimnasio
+export async function regenerateGymCode() {
+  const gym = await getGym()
+
+  let newCode = generateGymCode(gym.name)
+  // Asegurarse de que sea único
+  const conflict = await prisma.gym.findFirst({
+    where: { gymCode: newCode, id: { not: gym.id } },
+  })
+  if (conflict) newCode = generateRandomCode()
+
+  const updated = await prisma.gym.update({
+    where: { id: gym.id },
+    data: { gymCode: newCode },
+  })
+
+  revalidatePath("/settings")
+  return { success: true, gymCode: updated.gymCode }
 }
