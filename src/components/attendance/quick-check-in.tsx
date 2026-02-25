@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { checkIn } from "@/lib/actions/attendance"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { CheckCircle, Loader2, UserCheck } from "lucide-react"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 type Member = { id: string; name: string }
 
@@ -60,18 +60,15 @@ export function QuickCheckIn({
       )}
       <div className="flex gap-2">
         <div className="flex-1">
-          <Select value={selectedMember} onValueChange={setSelectedMember}>
-            <SelectTrigger className="min-h-[52px] text-base bg-white">
-              <SelectValue placeholder="¿Quién llega?" />
-            </SelectTrigger>
-            <SelectContent>
-              {members.map((m) => (
-                <SelectItem key={m.id} value={m.id} className="py-3 text-base">
-                  {m.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={members.map(m => ({ value: m.id, label: m.name }))}
+            value={selectedMember}
+            onValueChange={setSelectedMember}
+            placeholder="¿Quién llega?"
+            searchPlaceholder="Buscar miembro..."
+            emptyText="No se encontró el miembro."
+            className="min-h-[52px] bg-white"
+          />
         </div>
         <Button
           type="submit"

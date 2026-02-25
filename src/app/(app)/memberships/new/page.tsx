@@ -8,7 +8,7 @@ import { getPlans } from "@/lib/actions/plans"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, Loader2, CreditCard } from "lucide-react"
 import Link from "next/link"
@@ -92,34 +92,26 @@ export default function NewMembershipPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>Miembro *</Label>
-              <Select value={selectedMember} onValueChange={setSelectedMember}>
-                <SelectTrigger className="min-h-[48px] text-base">
-                  <SelectValue placeholder="Selecciona un miembro..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {members.map((m) => (
-                    <SelectItem key={m.id} value={m.id} className="py-3">
-                      {m.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                options={members.map(m => ({ value: m.id, label: m.name }))}
+                value={selectedMember}
+                onValueChange={setSelectedMember}
+                placeholder="Selecciona un miembro..."
+                searchPlaceholder="Buscar miembro por nombre..."
+                emptyText="No se encontró ningún miembro."
+              />
             </div>
 
             <div className="space-y-2">
               <Label>Plan *</Label>
-              <Select value={selectedPlan} onValueChange={setSelectedPlan}>
-                <SelectTrigger className="min-h-[48px] text-base">
-                  <SelectValue placeholder="Selecciona un plan..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {plans.map((p) => (
-                    <SelectItem key={p.id} value={p.id} className="py-3">
-                      {p.name} — {p.durationDays} días
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                options={plans.map(p => ({ value: p.id, label: p.name, sublabel: `${p.durationDays} días` }))}
+                value={selectedPlan}
+                onValueChange={setSelectedPlan}
+                placeholder="Selecciona un plan..."
+                searchPlaceholder="Buscar plan..."
+                emptyText="No se encontró ningún plan."
+              />
               {selectedPlanData && (
                 <div className="bg-blue-50 rounded-xl p-4 mt-2">
                   <p className="text-sm font-semibold text-blue-800">{selectedPlanData.name}</p>

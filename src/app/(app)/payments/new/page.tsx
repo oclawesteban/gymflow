@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 import { ArrowLeft, Loader2, DollarSign } from "lucide-react"
 import Link from "next/link"
 
@@ -102,18 +102,18 @@ export default function NewPaymentPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>Membresía *</Label>
-              <Select value={selectedMembership} onValueChange={setSelectedMembership}>
-                <SelectTrigger className="min-h-[48px] text-base">
-                  <SelectValue placeholder="Selecciona la membresía..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {memberships.map((ms) => (
-                    <SelectItem key={ms.id} value={ms.id} className="py-3">
-                      {ms.member.name} — {ms.plan.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                options={memberships.map(ms => ({
+                  value: ms.id,
+                  label: ms.member.name,
+                  sublabel: ms.plan.name,
+                }))}
+                value={selectedMembership}
+                onValueChange={setSelectedMembership}
+                placeholder="Selecciona la membresía..."
+                searchPlaceholder="Buscar por nombre o plan..."
+                emptyText="No se encontró ninguna membresía."
+              />
               {selected && (
                 <div className="bg-blue-50 rounded-xl p-3 text-sm text-blue-800">
                   Valor del plan: <span className="font-semibold">
