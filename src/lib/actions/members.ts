@@ -95,3 +95,24 @@ export async function deleteMember(id: string) {
   revalidatePath("/members")
   return { success: true }
 }
+
+export async function getMemberHistory(memberId: string) {
+  const gymId = await getGymId()
+  const miembro = await prisma.member.findFirst({
+    where: { id: memberId, gymId },
+    include: {
+      memberships: {
+        include: {
+          plan: true,
+          payments: { orderBy: { paidAt: "desc" } },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+      attendance: {
+        orderBy: { checkedIn: "desc" },
+        take: 200,
+      },
+    },
+  })
+  return miembro
+}

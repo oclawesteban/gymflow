@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { Sidebar } from "@/components/layout/sidebar"
 import { SessionProvider } from "next-auth/react"
+import { InstallBanner } from "@/components/pwa/install-banner"
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -16,6 +17,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             {children}
           </div>
         </main>
+        {/* Banner de instalación PWA */}
+        <InstallBanner />
       </div>
     </SessionProvider>
   )

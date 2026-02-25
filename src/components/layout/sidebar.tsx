@@ -10,6 +10,7 @@ import {
   FileText,
   DollarSign,
   Calendar,
+  CalendarDays,
   Dumbbell,
   Menu,
   X,
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/memberships", label: "Membresías", icon: CreditCard },
   { href: "/payments", label: "Pagos", icon: DollarSign },
   { href: "/attendance", label: "Asistencia", icon: Calendar },
+  { href: "/calendar", label: "Vencimientos", icon: CalendarDays },
   { href: "/reports", label: "Reportes", icon: BarChart2 },
   { href: "/settings", label: "Configuración", icon: Settings },
 ]
