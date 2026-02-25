@@ -29,11 +29,16 @@ export async function getNotifications(): Promise<Notification[]> {
   const tomorrowStart = startOfDay(tomorrow)
   const tomorrowEnd = endOfDay(tomorrow)
 
+  // Para cumpleaños: comparar mes y día (ignorar año)
+  const todayMonth = now.getMonth() + 1
+  const todayDay = now.getDate()
+
   const [
     vencidasHoy,
     vencenManana,
     sinMembresia,
     clasesMembresiasTotales,
+    todosLosMembers,
   ] = await Promise.all([
     // Membresías vencidas hoy
     prisma.membership.count({
@@ -78,7 +83,19 @@ export async function getNotifications(): Promise<Notification[]> {
         },
       },
     }),
+    // Todos los miembros con birthDate para verificar cumpleaños
+    prisma.member.findMany({
+      where: { gymId, birthDate: { not: null } },
+      select: { id: true, name: true, birthDate: true },
+    }),
   ])
+
+  // Filtrar cumpleaños de hoy
+  const cumpleanosHoy = todosLosMembers.filter((m) => {
+    if (!m.birthDate) return false
+    const bd = new Date(m.birthDate)
+    return bd.getMonth() + 1 === todayMonth && bd.getDate() === todayDay
+  })
 
   const clasesLlenas = clasesMembresiasTotales.filter(
     (c) => c._count.bookings >= c.capacity
@@ -122,6 +139,17 @@ export async function getNotifications(): Promise<Notification[]> {
       message: `${clasesLlenas} clase${clasesLlenas > 1 ? "s" : ""} con cupos llenos hoy`,
       count: clasesLlenas,
       href: "/classes",
+      severity: "info",
+    })
+  }
+
+  if (cumpleanosHoy.length > 0) {
+    const nombres = cumpleanosHoy.map((m) => m.name.split(" ")[0]).join(", ")
+    notifications.push({
+      type: "birthday",
+      message: `🎂 Cumpleaños hoy: ${nombres}`,
+      count: cumpleanosHoy.length,
+      href: "/members",
       severity: "info",
     })
   }

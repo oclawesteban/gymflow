@@ -61,6 +61,7 @@ export async function createMember(data: {
   photoUrl?: string
   idType?: string
   idNumber?: string
+  birthDate?: Date
   hasEps?: boolean
   epsName?: string
   emergencyContact?: string
@@ -87,6 +88,7 @@ export async function updateMember(id: string, data: {
   photoUrl?: string
   idType?: string
   idNumber?: string
+  birthDate?: Date
   hasEps?: boolean
   epsName?: string
   emergencyContact?: string

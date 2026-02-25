@@ -42,6 +42,7 @@ export default function NewMemberPage() {
     const data = new FormData(form)
 
     try {
+      const birthDateStr = data.get("birthDate") as string
       const result = await createMember({
         name: data.get("name") as string,
         email: data.get("email") as string || undefined,
@@ -49,6 +50,7 @@ export default function NewMemberPage() {
         photoUrl: data.get("photoUrl") as string || undefined,
         idType: data.get("idType") as string || undefined,
         idNumber: data.get("idNumber") as string || undefined,
+        birthDate: birthDateStr ? new Date(birthDateStr) : undefined,
         hasEps,
         epsName: hasEps ? epsName : undefined,
         emergencyContact: data.get("emergencyContact") as string || undefined,
@@ -139,6 +141,13 @@ export default function NewMemberPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="birthDate">Fecha de nacimiento</Label>
+                <Input
+                  id="birthDate" name="birthDate" type="date"
+                  className="min-h-[48px] text-base"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="idType">Tipo de documento</Label>
                 <select

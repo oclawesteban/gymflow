@@ -88,9 +88,10 @@ model Gym {
   classes      GymClass[]
   promoCodes   PromoCode[]
   instructors  Instructor[]
-  accessGrants AccessGrant[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  accessGrants  AccessGrant[]
+  measurements  BodyMeasurement[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model Member {
@@ -101,6 +102,7 @@ model Member {
   photoUrl         String?
   idType           String?        // CC, CE, TI, PA
   idNumber         String?        // Número de documento
+  birthDate        DateTime?      // Fecha de nacimiento
   hasEps           Boolean        @default(false)
   epsName          String?        // Nombre de la EPS
   emergencyContact String?
@@ -114,6 +116,7 @@ model Member {
   attendance       Attendance[]
   bookings         ClassBooking[]
   accessGrants     AccessGrant[]
+  measurements     BodyMeasurement[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 }
@@ -274,4 +277,23 @@ model AccessGrant {
   expiresAt     DateTime  // TTL de 30 segundos
   usedAt        DateTime? // null = pendiente, DateTime = ya usado
   createdAt     DateTime  @default(now())
+}
+
+model BodyMeasurement {
+  id         String   @id @default(cuid())
+  memberId   String
+  gymId      String
+  member     Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  gym        Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  weight     Float?   // kg
+  height     Float?   // cm
+  bodyFat    Float?   // %
+  bmi        Float?   // calculado automáticamente
+  waist      Float?   // cm
+  hip        Float?   // cm
+  chest      Float?   // cm
+  arms       Float?   // cm
+  notes      String?
+  measuredAt DateTime @default(now())
+  createdAt  DateTime @default(now())
 }

@@ -1,5 +1,7 @@
 import { getMemberHistory } from "@/lib/actions/members"
+import { getMeasurements } from "@/lib/actions/measurements"
 import { getGymSettings } from "@/lib/actions/settings"
+import { BodyMeasurements } from "@/components/members/body-measurements"
 import { notFound } from "next/navigation"
 import {
   formatDate,
@@ -92,9 +94,10 @@ export default async function MemberDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const [member, gymSettings] = await Promise.all([
+  const [member, gymSettings, measurements] = await Promise.all([
     getMemberHistory(id),
     getGymSettings(),
+    getMeasurements(id),
   ])
   if (!member) notFound()
 
@@ -178,7 +181,7 @@ export default async function MemberDetailPage({
 
       {/* Tabs de historial */}
       <Tabs defaultValue="informacion" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-auto">
+        <TabsList className="grid w-full grid-cols-5 h-auto">
           <TabsTrigger value="informacion" className="text-xs py-2">
             Información
           </TabsTrigger>
@@ -190,6 +193,9 @@ export default async function MemberDetailPage({
           </TabsTrigger>
           <TabsTrigger value="asistencia" className="text-xs py-2">
             Asistencia
+          </TabsTrigger>
+          <TabsTrigger value="medidas" className="text-xs py-2">
+            📏 Medidas
           </TabsTrigger>
         </TabsList>
 
@@ -497,6 +503,17 @@ export default async function MemberDetailPage({
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Tab: Medidas corporales */}
+        <TabsContent value="medidas" className="mt-4">
+          <BodyMeasurements
+            memberId={member.id}
+            initialMeasurements={measurements.map((m) => ({
+              ...m,
+              measuredAt: new Date(m.measuredAt),
+            }))}
+          />
         </TabsContent>
       </Tabs>
     </div>
