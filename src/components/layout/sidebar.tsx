@@ -17,6 +17,7 @@ import {
   LogOut,
   BarChart2,
   Settings,
+  Users2,
 } from "lucide-react"
 import { useState } from "react"
 import { signOut } from "next-auth/react"
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/members", label: "Miembros", icon: Users },
   { href: "/plans", label: "Planes", icon: FileText },
   { href: "/memberships", label: "Membresías", icon: CreditCard },
+  { href: "/classes", label: "Clases", icon: Users2 },
   { href: "/payments", label: "Pagos", icon: DollarSign },
   { href: "/attendance", label: "Asistencia", icon: Calendar },
   { href: "/calendar", label: "Vencimientos", icon: CalendarDays },

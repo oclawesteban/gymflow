@@ -1,4 +1,5 @@
 import { getMemberHistory } from "@/lib/actions/members"
+import { getGymSettings } from "@/lib/actions/settings"
 import { notFound } from "next/navigation"
 import {
   formatDate,
@@ -23,10 +24,14 @@ import {
   CheckCircle,
   TrendingUp,
   Flame,
+  Globe,
+  UserCheck,
+  UserX,
 } from "lucide-react"
 import Link from "next/link"
 import { MemberActions } from "@/components/members/member-actions"
 import { MemberQR } from "@/components/members/member-qr"
+import { ReceiptButton } from "@/components/payments/receipt-button"
 
 // Calcula la racha actual de días consecutivos de asistencia
 function calcularRacha(fechas: Date[]): number {
@@ -87,7 +92,10 @@ export default async function MemberDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const member = await getMemberHistory(id)
+  const [member, gymSettings] = await Promise.all([
+    getMemberHistory(id),
+    getGymSettings(),
+  ])
   if (!member) notFound()
 
   const activeMembership = member.memberships.find((m) => m.status === "ACTIVE")
@@ -238,6 +246,39 @@ export default async function MemberDetailPage({
                   Sin información de contacto registrada
                 </p>
               )}
+
+              {/* Estado del Portal */}
+              <div className="pt-3 border-t border-gray-100">
+                <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">
+                  Portal del Socio
+                </p>
+                {member.portalEmail ? (
+                  <div className="flex items-center gap-2">
+                    <UserCheck className="h-4 w-4 text-green-500" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-green-700">Portal activado</p>
+                      <p className="text-xs text-gray-500">{member.portalEmail}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <UserX className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-500">Sin acceso al portal</p>
+                    </div>
+                    <Link
+                      href={`/portal/register?gym=${member.gymId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <button className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 border border-blue-200 rounded-lg px-3 py-1.5 hover:bg-blue-50 transition-colors">
+                        <Globe className="h-3.5 w-3.5" />
+                        Invitar al portal
+                      </button>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -351,9 +392,23 @@ export default async function MemberDetailPage({
                             <p className="text-xs text-gray-400">Ref: {p.reference}</p>
                           )}
                         </div>
-                        <span className="text-sm font-semibold text-green-700 flex-shrink-0">
-                          {formatCurrency(Number(p.amount))}
-                        </span>
+                        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                          <span className="text-sm font-semibold text-green-700">
+                            {formatCurrency(Number(p.amount))}
+                          </span>
+                          <ReceiptButton
+                            gymName={gymSettings.name}
+                            payment={{
+                              id: p.id,
+                              amount: Number(p.amount),
+                              method: p.method,
+                              reference: p.reference ?? null,
+                              paidAt: p.paidAt,
+                              memberName: member.name,
+                              planName: p.plan.name,
+                            }}
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -57,7 +57,7 @@ model VerificationToken {
 }
 
 model Gym {
-  id           String   @id @default(cuid())
+  id           String      @id @default(cuid())
   name         String
   address      String?
   phone        String?
@@ -66,16 +66,17 @@ model Gym {
   description  String?
   logoUrl      String?
   city         String?
-  ownerId      String   @unique
-  owner        User     @relation(fields: [ownerId], references: [id])
+  ownerId      String      @unique
+  owner        User        @relation(fields: [ownerId], references: [id])
   members      Member[]
   plans        Plan[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  classes      GymClass[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Member {
-  id               String        @id @default(cuid())
+  id               String         @id @default(cuid())
   name             String
   email            String?
   phone            String?
@@ -83,12 +84,15 @@ model Member {
   emergencyContact String?
   emergencyPhone   String?
   notes            String?
+  portalEmail      String?        @unique
+  portalPassword   String?
   gymId            String
-  gym              Gym           @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  gym              Gym            @relation(fields: [gymId], references: [id], onDelete: Cascade)
   memberships      Membership[]
   attendance       Attendance[]
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  bookings         ClassBooking[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
 model Plan {
@@ -141,6 +145,36 @@ model Attendance {
   checkedIn DateTime @default(now())
   notes     String?
   createdAt DateTime @default(now())
+}
+
+model GymClass {
+  id          String         @id @default(cuid())
+  gymId       String
+  gym         Gym            @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  instructor  String?
+  capacity    Int            @default(20)
+  dayOfWeek   Int            // 0=Domingo, 1=Lunes, ... 6=Sábado
+  startTime   String         // "07:00"
+  endTime     String         // "08:00"
+  color       String         @default("#3B82F6")
+  isActive    Boolean        @default(true)
+  bookings    ClassBooking[]
+  createdAt   DateTime       @default(now())
+}
+
+model ClassBooking {
+  id        String   @id @default(cuid())
+  classId   String
+  gymClass  GymClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  date      DateTime // Fecha específica de la clase
+  status    String   @default("CONFIRMED") // CONFIRMED, CANCELLED
+  createdAt DateTime @default(now())
+
+  @@unique([classId, memberId, date])
 }
 
 enum Role {

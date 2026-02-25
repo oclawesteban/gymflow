@@ -1,14 +1,15 @@
 import { getPayments } from "@/lib/actions/payments"
+import { getGymSettings } from "@/lib/actions/settings"
 import { formatCurrency, formatDateTime, getPaymentMethodLabel } from "@/lib/utils/format"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Plus, DollarSign, CreditCard, Banknote } from "lucide-react"
+import { Plus, DollarSign } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ExportButton } from "@/components/exports/export-button"
 import { exportPayments } from "@/lib/actions/exports"
+import { ReceiptButton } from "@/components/payments/receipt-button"
 
 const METHOD_ICONS: Record<string, string> = {
   CASH: "💵",
@@ -20,7 +21,7 @@ const METHOD_ICONS: Record<string, string> = {
 }
 
 async function PaymentsList() {
-  const payments = await getPayments()
+  const [payments, gym] = await Promise.all([getPayments(), getGymSettings()])
 
   if (payments.length === 0) {
     return (
@@ -53,7 +54,7 @@ async function PaymentsList() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <Link href={`/members/${payment.membership.memberId}`}>
                       <p className="font-semibold text-gray-900 hover:text-blue-600 transition-colors">
                         {payment.membership.member.name}
@@ -64,9 +65,23 @@ async function PaymentsList() {
                     </p>
                     <p className="text-xs text-gray-400">{formatDateTime(payment.paidAt)}</p>
                   </div>
-                  <span className="text-lg font-bold text-green-700 flex-shrink-0">
-                    {formatCurrency(Number(payment.amount))}
-                  </span>
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    <span className="text-lg font-bold text-green-700">
+                      {formatCurrency(Number(payment.amount))}
+                    </span>
+                    <ReceiptButton
+                      gymName={gym.name}
+                      payment={{
+                        id: payment.id,
+                        amount: Number(payment.amount),
+                        method: payment.method,
+                        reference: payment.reference ?? null,
+                        paidAt: payment.paidAt,
+                        memberName: payment.membership.member.name,
+                        planName: payment.membership.plan.name,
+                      }}
+                    />
+                  </div>
                 </div>
                 {payment.reference && (
                   <p className="text-xs text-gray-400 mt-1">Ref: {payment.reference}</p>

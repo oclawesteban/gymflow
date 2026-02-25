@@ -1,5 +1,6 @@
 import { getGymSettings } from "@/lib/actions/settings"
 import { SettingsForm } from "./settings-form"
+import { PortalSettings } from "@/components/settings/portal-settings"
 import { Settings } from "lucide-react"
 
 export default async function SettingsPage() {
@@ -19,6 +20,9 @@ export default async function SettingsPage() {
       </div>
 
       <SettingsForm gym={gym} />
+
+      {/* Sección: Portal del Socio */}
+      <PortalSettings gymId={gym.id} gymName={gym.name} />
     </div>
   )
 }
