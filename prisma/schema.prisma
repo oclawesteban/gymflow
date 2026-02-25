@@ -265,12 +265,13 @@ enum PaymentMethod {
 }
 
 model AccessGrant {
-  id        String    @id @default(cuid())
-  gymId     String
-  memberId  String
-  gym       Gym       @relation(fields: [gymId], references: [id], onDelete: Cascade)
-  member    Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  expiresAt DateTime  // TTL de 30 segundos
-  usedAt    DateTime? // null = pendiente, DateTime = ya usado
-  createdAt DateTime  @default(now())
+  id            String    @id @default(cuid())
+  gymId         String
+  memberId      String?   // null cuando lo abre el admin manualmente
+  isAdminGrant  Boolean   @default(false)
+  gym           Gym       @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  member        Member?   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  expiresAt     DateTime  // TTL de 30 segundos
+  usedAt        DateTime? // null = pendiente, DateTime = ya usado
+  createdAt     DateTime  @default(now())
 }

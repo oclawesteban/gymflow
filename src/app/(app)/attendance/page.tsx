@@ -8,6 +8,7 @@ import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CheckInButton } from "@/components/attendance/check-in-button"
 import { QuickCheckIn } from "@/components/attendance/quick-check-in"
+import { AdminTurnstileButton } from "@/components/access/admin-turnstile-button"
 
 async function AttendanceContent({ memberId }: { memberId?: string }) {
   const [attendance, members] = await Promise.all([
@@ -108,9 +109,12 @@ export default async function AttendancePage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Asistencia</h1>
-        <p className="text-gray-500 text-sm mt-0.5">Registra la entrada de los miembros</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Asistencia</h1>
+          <p className="text-gray-500 text-sm mt-0.5">Registra la entrada de los miembros</p>
+        </div>
+        <AdminTurnstileButton />
       </div>
 
       <Suspense fallback={

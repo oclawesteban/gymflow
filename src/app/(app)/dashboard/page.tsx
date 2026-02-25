@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button"
 import { Suspense } from "react"
 import { ExpiringSection } from "@/components/memberships/expiring-section"
 import { PlanUsageCard } from "@/components/billing/plan-usage-card"
+import { AdminTurnstileButton } from "@/components/access/admin-turnstile-button"
 
 async function DashboardContent() {
   let data
@@ -114,8 +115,9 @@ async function DashboardContent() {
 
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-3">
+        <AdminTurnstileButton />
         <Link href="/attendance">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white min-h-[48px] px-5 gap-2">
+          <Button variant="outline" className="min-h-[48px] px-5 gap-2">
             <CalendarCheck className="h-4 w-4" />
             Registrar Asistencia
           </Button>

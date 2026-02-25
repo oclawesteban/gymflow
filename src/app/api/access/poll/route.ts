@@ -40,17 +40,20 @@ export async function GET(req: NextRequest) {
       data: { usedAt: now },
     })
 
-    // Registrar asistencia
-    await prisma.attendance.create({
-      data: {
-        memberId: grant.memberId,
-        notes: "Entrada vía torniquete — portal del socio",
-      },
-    })
+    // Registrar asistencia solo si es socio (no apertura manual del admin)
+    if (grant.memberId) {
+      await prisma.attendance.create({
+        data: {
+          memberId: grant.memberId,
+          notes: "Entrada vía torniquete — portal del socio",
+        },
+      })
+    }
 
     return NextResponse.json({
       open: true,
-      member: grant.member.name,
+      member: grant.member?.name ?? "Admin",
+      isAdminGrant: grant.isAdminGrant,
       grantId: grant.id,
     })
   } catch (err) {
