@@ -19,25 +19,52 @@ export async function getMembers(options?: { query?: string }) {
   return prisma.member.findMany({
     where: {
       gymId,
-      ...(query
-        ? {
-            OR: [
-              { name: { contains: query, mode: "insensitive" } },
-              { email: { contains: query, mode: "insensitive" } },
-              { phone: { contains: query } },
-            ],
-          }
-        : {}),
+      ...(query ? {
+        OR: [
+          { name: { contains: query, mode: "insensitive" as const } },
+          { email: { contains: query, mode: "insensitive" as const } },
+          { phone: { contains: query } },
+        ],
+      } : {}),
     },
     include: {
-      memberships: {
-        orderBy: { createdAt: "desc" },
-        take: 1,
-        include: { plan: true },
-      },
+      memberships: { orderBy: { createdAt: "desc" }, take: 1, include: { plan: true } },
     },
     orderBy: { name: "asc" },
   })
+}
+
+const PAGE_SIZE = 12
+
+export async function getMembersPaginated(options?: { query?: string; page?: number }) {
+  const gymId = await getGymId()
+  const query = options?.query?.trim()
+  const page = Math.max(1, options?.page ?? 1)
+  const skip = (page - 1) * PAGE_SIZE
+
+  const where = {
+    gymId,
+    ...(query ? {
+      OR: [
+        { name: { contains: query, mode: "insensitive" as const } },
+        { email: { contains: query, mode: "insensitive" as const } },
+        { phone: { contains: query } },
+      ],
+    } : {}),
+  }
+
+  const [members, total] = await Promise.all([
+    prisma.member.findMany({
+      where,
+      include: { memberships: { orderBy: { createdAt: "desc" }, take: 1, include: { plan: true } } },
+      orderBy: { name: "asc" },
+      skip,
+      take: PAGE_SIZE,
+    }),
+    prisma.member.count({ where }),
+  ])
+
+  return { members, total, page, pageSize: PAGE_SIZE, totalPages: Math.ceil(total / PAGE_SIZE) }
 }
 
 export async function getMember(id: string) {

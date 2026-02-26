@@ -21,13 +21,31 @@ export async function getPayments(filters?: { membershipId?: string }) {
         ...(filters?.membershipId ? { id: filters.membershipId } : {}),
       },
     },
-    include: {
-      membership: {
-        include: { member: true, plan: true },
-      },
-    },
+    include: { membership: { include: { member: true, plan: true } } },
     orderBy: { paidAt: "desc" },
   })
+}
+
+const PAGE_SIZE_PAYMENTS = 15
+
+export async function getPaymentsPaginated(options?: { page?: number }) {
+  const gymId = await getGymId()
+  const page = Math.max(1, options?.page ?? 1)
+  const skip = (page - 1) * PAGE_SIZE_PAYMENTS
+
+  const where = { membership: { member: { gymId } } }
+  const [payments, total] = await Promise.all([
+    prisma.payment.findMany({
+      where,
+      include: { membership: { include: { member: true, plan: true } } },
+      orderBy: { paidAt: "desc" },
+      skip,
+      take: PAGE_SIZE_PAYMENTS,
+    }),
+    prisma.payment.count({ where }),
+  ])
+
+  return { payments, total, page, pageSize: PAGE_SIZE_PAYMENTS, totalPages: Math.ceil(total / PAGE_SIZE_PAYMENTS) }
 }
 
 export async function createPayment(data: {

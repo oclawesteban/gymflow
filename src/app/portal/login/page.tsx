@@ -53,7 +53,7 @@ export default function PortalLoginPage() {
             Iniciar Sesión
           </CardTitle>
           <CardDescription>
-            Accede a tu membresía, clases y torniquete
+            Accede a tu membresía, clases y entrada al gimnasio
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

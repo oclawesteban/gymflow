@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -21,7 +21,31 @@ import {
   Loader2,
   Save,
   CheckCircle2,
+  Camera,
+  Dumbbell,
 } from "lucide-react"
+
+function resizeImageToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new window.Image()
+      img.onload = () => {
+        const MAX = 400
+        const scale = Math.min(MAX / img.width, MAX / img.height, 1)
+        const canvas = document.createElement("canvas")
+        canvas.width = Math.round(img.width * scale)
+        canvas.height = Math.round(img.height * scale)
+        canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL("image/png", 0.9))
+      }
+      img.onerror = reject
+      img.src = e.target?.result as string
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
 
 // Esquema de validación con Zod
 const settingsSchema = z.object({
@@ -31,7 +55,7 @@ const settingsSchema = z.object({
   whatsapp: z.string().optional(),
   contactEmail: z.string().email("Email inválido").optional().or(z.literal("")),
   description: z.string().optional(),
-  logoUrl: z.string().url("URL inválida").optional().or(z.literal("")),
+  logoUrl: z.string().optional(),
   city: z.string().optional(),
 })
 
@@ -58,11 +82,25 @@ export function SettingsForm({ gym }: SettingsFormProps) {
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState("")
   const [logoPreview, setLogoPreview] = useState(gym.logoUrl || "")
+  const logoFileRef = useRef<HTMLInputElement>(null)
+
+  async function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith("image/")) return
+    if (file.size > 5 * 1024 * 1024) { setError("La imagen no puede superar 5 MB"); return }
+    try {
+      const dataUrl = await resizeImageToDataUrl(file)
+      setLogoPreview(dataUrl)
+      setValue("logoUrl", dataUrl)
+    } catch { setError("No se pudo procesar la imagen") }
+  }
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
@@ -219,40 +257,41 @@ export function SettingsForm({ gym }: SettingsFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="logoUrl">URL del Logo</Label>
-            <Input
-              id="logoUrl"
-              type="url"
-              placeholder="https://ejemplo.com/logo.png"
-              className="min-h-[48px] text-base"
-              {...register("logoUrl")}
-              onChange={(e) => {
-                register("logoUrl").onChange(e)
-                setLogoPreview(e.target.value)
-              }}
-            />
-            {errors.logoUrl && (
-              <p className="text-sm text-red-600">{errors.logoUrl.message}</p>
-            )}
-          </div>
-
-          {/* Preview del logo */}
-          {(logoPreview || logoUrlValue) && (
-            <div className="mt-2">
-              <p className="text-xs text-gray-500 mb-2">Vista previa:</p>
-              <div className="w-24 h-24 rounded-xl border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={logoPreview || logoUrlValue}
-                  alt="Logo preview"
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    ;(e.target as HTMLImageElement).style.display = "none"
-                  }}
-                />
+            <Label>Logo del gimnasio</Label>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => logoFileRef.current?.click()}
+                className="relative group flex-shrink-0 focus:outline-none"
+              >
+                <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden">
+                  {logoPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={logoPreview} alt="Logo" className="w-full h-full object-contain p-1" />
+                  ) : (
+                    <Dumbbell className="h-8 w-8 text-gray-300" />
+                  )}
+                </div>
+                <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="h-5 w-5 text-white" />
+                </div>
+              </button>
+              <input ref={logoFileRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFile} />
+              <input type="hidden" {...register("logoUrl")} />
+              <div>
+                <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">Logo del gimnasio</p>
+                <p className="text-xs text-gray-400 mt-0.5">Haz clic para subir (PNG, JPG — máx 5 MB)</p>
+                {logoPreview && (
+                  <button type="button" onClick={() => { setLogoPreview(""); setValue("logoUrl", "") }}
+                    className="text-xs text-red-500 hover:underline mt-1">
+                    Quitar logo
+                  </button>
+                )}
               </div>
             </div>
-          )}
+          </div>
+
+
         </CardContent>
       </Card>
 

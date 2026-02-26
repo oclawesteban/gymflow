@@ -3,16 +3,18 @@ import { getMembers } from "@/lib/actions/members"
 import { formatDateTime } from "@/lib/utils/format"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CalendarCheck, UserCheck } from "lucide-react"
+import { CalendarCheck, UserCheck, History, CalendarDays } from "lucide-react"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CheckInButton } from "@/components/attendance/check-in-button"
 import { QuickCheckIn } from "@/components/attendance/quick-check-in"
 import { AdminTurnstileButton } from "@/components/access/admin-turnstile-button"
+import Link from "next/link"
 
-async function AttendanceContent({ memberId }: { memberId?: string }) {
+async function AttendanceContent({ memberId, showAll }: { memberId?: string; showAll?: boolean }) {
+  const todayFilter = !memberId && !showAll ? new Date() : undefined
   const [attendance, members] = await Promise.all([
-    getAttendance({ memberId }),
+    getAttendance({ memberId, date: todayFilter }),
     getMembers(),
   ])
 
@@ -57,10 +59,29 @@ async function AttendanceContent({ memberId }: { memberId?: string }) {
       {/* Attendance Log */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <CalendarCheck className="h-5 w-5" />
-            {memberId ? "Historial del Miembro" : "Asistencias de Hoy"}
-          </CardTitle>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <CalendarCheck className="h-5 w-5" />
+              {memberId ? "Historial del Miembro" : showAll ? "Historial Completo" : `Asistencias de Hoy (${attendance.length})`}
+            </CardTitle>
+            {!memberId && (
+              showAll ? (
+                <Link href="/attendance">
+                  <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
+                    <CalendarDays className="h-3.5 w-3.5" />
+                    Solo hoy
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/attendance?all=true">
+                  <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
+                    <History className="h-3.5 w-3.5" />
+                    Ver historial
+                  </Button>
+                </Link>
+              )
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {attendance.length === 0 ? (
@@ -103,9 +124,10 @@ async function AttendanceContent({ memberId }: { memberId?: string }) {
 export default async function AttendancePage({
   searchParams,
 }: {
-  searchParams: Promise<{ memberId?: string }>
+  searchParams: Promise<{ memberId?: string; all?: string }>
 }) {
-  const { memberId } = await searchParams
+  const { memberId, all } = await searchParams
+  const showAll = all === "true"
 
   return (
     <div className="space-y-6">
@@ -125,7 +147,7 @@ export default async function AttendancePage({
           </div>
         </div>
       }>
-        <AttendanceContent memberId={memberId} />
+        <AttendanceContent memberId={memberId} showAll={showAll} />
       </Suspense>
     </div>
   )

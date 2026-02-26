@@ -247,7 +247,7 @@ export default function NewPaymentPage() {
                       setPromoError("")
                     }}
                     onKeyDown={handleValidatePromo}
-                    placeholder="Ej: ENERO20 — presiona Enter para aplicar"
+                    placeholder="Ej: ENERO20 (Enter para aplicar)"
                     className="min-h-[48px] text-base font-mono uppercase flex-1"
                   />
                   <Button

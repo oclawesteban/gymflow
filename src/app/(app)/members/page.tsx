@@ -1,9 +1,9 @@
-import { getMembers } from "@/lib/actions/members"
+import { getMembersPaginated } from "@/lib/actions/members"
 import { formatDate, getMembershipStatusColor, getMembershipStatusLabel } from "@/lib/utils/format"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Users, Plus, Phone, Mail } from "lucide-react"
+import { Users, Plus, Phone, Mail, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -12,8 +12,8 @@ import { MemberQR } from "@/components/members/member-qr"
 import { ExportButton } from "@/components/exports/export-button"
 import { exportMembers } from "@/lib/actions/exports"
 
-async function MembersList({ query }: { query?: string }) {
-  const members = await getMembers(query ? { query } : undefined)
+async function MembersList({ query, page }: { query?: string; page?: number }) {
+  const { members, total, totalPages, page: currentPage } = await getMembersPaginated({ query, page })
 
   if (members.length === 0) {
     return (
@@ -47,6 +47,7 @@ async function MembersList({ query }: { query?: string }) {
   }
 
   return (
+    <div className="space-y-4">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {members.map((member) => {
         const latestMembership = member.memberships[0]
@@ -108,15 +109,50 @@ async function MembersList({ query }: { query?: string }) {
         )
       })}
     </div>
+
+    {/* Paginación */}
+
+    {totalPages > 1 && (
+      <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+        <p className="text-sm text-gray-500">
+          {total} miembro{total !== 1 ? "s" : ""} · Página {currentPage} de {totalPages}
+        </p>
+        <div className="flex items-center gap-2">
+          <Link href={`/members?${query ? `q=${query}&` : ""}page=${Math.max(1, currentPage - 1)}`}>
+            <Button variant="outline" size="sm" disabled={currentPage <= 1} className="h-9 w-9 p-0">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Link key={p} href={`/members?${query ? `q=${query}&` : ""}page=${p}`}>
+              <Button
+                variant={p === currentPage ? "default" : "outline"}
+                size="sm"
+                className={`h-9 w-9 p-0 ${p === currentPage ? "bg-blue-600" : ""}`}
+              >
+                {p}
+              </Button>
+            </Link>
+          ))}
+          <Link href={`/members?${query ? `q=${query}&` : ""}page=${Math.min(totalPages, currentPage + 1)}`}>
+            <Button variant="outline" size="sm" disabled={currentPage >= totalPages} className="h-9 w-9 p-0">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    )}
+    </div>
   )
 }
 
 export default async function MembersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>
+  searchParams: Promise<{ q?: string; page?: string }>
 }) {
-  const { q } = await searchParams
+  const { q, page } = await searchParams
+  const pageNum = parseInt(page ?? "1") || 1
 
   return (
     <div className="space-y-6">
@@ -151,7 +187,7 @@ export default async function MembersPage({
           {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
       }>
-        <MembersList query={q} />
+        <MembersList query={q} page={pageNum} />
       </Suspense>
     </div>
   )

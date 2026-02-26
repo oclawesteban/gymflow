@@ -318,7 +318,7 @@ export function ProfileForm({ user }: { user: ProfileUser }) {
               type="submit"
               disabled={savingPassword || (!!confirmPassword && newPassword !== confirmPassword)}
               variant="outline"
-              className="w-full min-h-[48px] gap-2 border-orange-200 text-orange-700 hover:bg-orange-50"
+              className="w-full min-h-[48px] gap-2 border-blue-200 text-blue-700 hover:bg-blue-50"
             >
               {savingPassword ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
