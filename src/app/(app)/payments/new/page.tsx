@@ -11,17 +11,17 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SearchableSelect } from "@/components/ui/searchable-select"
-import { ArrowLeft, Loader2, DollarSign, Tag, CheckCircle2, XCircle } from "lucide-react"
+import { ArrowLeft, Loader2, DollarSign, Tag, CheckCircle2, XCircle, Banknote, Smartphone, Wallet, CreditCard, Building2, CircleDollarSign } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
 const PAYMENT_METHODS = [
-  { value: "CASH", label: "💵 Efectivo" },
-  { value: "NEQUI", label: "💜 Nequi" },
-  { value: "DAVIPLATA", label: "🔴 Daviplata" },
-  { value: "CARD", label: "💳 Tarjeta" },
-  { value: "TRANSFER", label: "🏦 Transferencia" },
-  { value: "OTHER", label: "💰 Otro" },
+  { value: "CASH",     label: "Efectivo",       Icon: Banknote },
+  { value: "NEQUI",    label: "Nequi",          Icon: Smartphone },
+  { value: "DAVIPLATA",label: "Daviplata",      Icon: Wallet },
+  { value: "CARD",     label: "Tarjeta",        Icon: CreditCard },
+  { value: "TRANSFER", label: "Transferencia",  Icon: Building2 },
+  { value: "OTHER",    label: "Otro",           Icon: CircleDollarSign },
 ]
 
 type Membership = {
@@ -297,20 +297,24 @@ export default function NewPaymentPage() {
             <div className="space-y-2">
               <Label>Forma de pago *</Label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {PAYMENT_METHODS.map((pm) => (
-                  <button
-                    key={pm.value}
-                    type="button"
-                    onClick={() => setMethod(pm.value)}
-                    className={`py-3 px-3 rounded-xl border text-sm font-medium transition-all ${
-                      method === pm.value
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-blue-300"
-                    }`}
-                  >
-                    {pm.label}
-                  </button>
-                ))}
+                {PAYMENT_METHODS.map((pm) => {
+                  const Icon = pm.Icon
+                  return (
+                    <button
+                      key={pm.value}
+                      type="button"
+                      onClick={() => setMethod(pm.value)}
+                      className={`py-3 px-3 rounded-xl border text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                        method === pm.value
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-blue-300"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      {pm.label}
+                    </button>
+                  )
+                })}
               </div>
             </div>
 

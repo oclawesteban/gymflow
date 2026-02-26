@@ -54,8 +54,8 @@ export async function registerMemberPortal(
   if (!email || !password || !gymCode) {
     return { success: false, error: "Todos los campos son requeridos" }
   }
-  if (password.length < 6) {
-    return { success: false, error: "La contraseña debe tener al menos 6 caracteres" }
+  if (password.length < 8) {
+    return { success: false, error: "La contraseña debe tener al menos 8 caracteres" }
   }
 
   // Verificar que el gym existe por gymCode (legible) o por id (compatibilidad)

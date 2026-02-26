@@ -239,7 +239,7 @@ export default function PricingPage() {
         {/* Bottom CTA */}
         <div className="text-center space-y-4 py-8">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            ¿Listo para ordenar tu gimnasio?
+            ¿Listo para gestionar tu gimnasio?
           </h2>
           <p className="text-gray-500">Empieza hoy, gratis. Sin tarjeta de crédito.</p>
           <Link href="/register">

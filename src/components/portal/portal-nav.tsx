@@ -9,8 +9,14 @@ const NAV_ITEMS = [
   { href: "/portal/classes", label: "Clases", Icon: Users2 },
 ]
 
+// Rutas donde NO mostramos la nav (usuario no autenticado)
+const AUTH_ROUTES = ["/portal/login", "/portal/register"]
+
 export function PortalNav() {
   const pathname = usePathname()
+
+  // Ocultar nav en páginas de autenticación
+  if (AUTH_ROUTES.some((r) => pathname.startsWith(r))) return null
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">

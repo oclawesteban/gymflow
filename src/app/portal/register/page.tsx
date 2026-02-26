@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, UserPlus, LogIn, CheckCircle2 } from "lucide-react"
+import { Loader2, UserPlus, LogIn, CheckCircle2, Eye, EyeOff } from "lucide-react"
 import { Suspense } from "react"
 
 function RegisterForm() {
@@ -18,6 +18,7 @@ function RegisterForm() {
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
   const [gymCode, setGymCode] = useState(searchParams.get("gym") ?? "")
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
@@ -31,8 +32,8 @@ function RegisterForm() {
       return
     }
 
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres")
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres")
       return
     }
 
@@ -95,30 +96,47 @@ function RegisterForm() {
 
       <div className="space-y-2">
         <Label htmlFor="password">Contraseña</Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder="Mínimo 6 caracteres"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="new-password"
-          className="min-h-[48px] text-base"
-        />
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Mínimo 8 caracteres"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+            className="min-h-[48px] text-base pr-12"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="confirm">Confirmar contraseña</Label>
-        <Input
-          id="confirm"
-          type="password"
-          placeholder="Repite tu contraseña"
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          required
-          autoComplete="new-password"
-          className="min-h-[48px] text-base"
-        />
+        <div className="relative">
+          <Input
+            id="confirm"
+            type={showPassword ? "text" : "password"}
+            placeholder="Repite tu contraseña"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            required
+            autoComplete="new-password"
+            className="min-h-[48px] text-base pr-12"
+          />
+          {confirm && (
+            <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium ${password === confirm ? "text-green-600" : "text-red-500"}`}>
+              {password === confirm ? "✓" : "✗"}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">

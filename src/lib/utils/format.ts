@@ -23,7 +23,19 @@ export function formatDateShort(date: Date | string | null | undefined): string 
 
 export function formatDateTime(date: Date | string | null | undefined): string {
   if (!date) return "—"
-  return format(new Date(date), "dd/MM/yyyy 'a las' HH:mm", { locale: es })
+  const d = new Date(date)
+  // Mostrar en zona horaria de Colombia (UTC-5) usando Intl nativo
+  const formatted = new Intl.DateTimeFormat("es-CO", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Bogota",
+    hour12: false,
+  }).format(d)
+  // "25/02/2026, 13:03" → "25/02/2026 a las 13:03"
+  return formatted.replace(", ", " a las ")
 }
 
 export function formatRelative(date: Date | string | null | undefined): string {

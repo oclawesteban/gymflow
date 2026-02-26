@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { createMember } from "@/lib/actions/members"
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Loader2, UserPlus, CreditCard, HeartPulse, Phone } from "lucide-react"
+import { ArrowLeft, Loader2, UserPlus, CreditCard, HeartPulse, Phone, Camera, User } from "lucide-react"
 import Link from "next/link"
 
 const ID_TYPES = [
@@ -25,6 +25,28 @@ const EPS_LIST = [
   "Salud Total", "Aliansalud", "Cruz Blanca", "Otra",
 ]
 
+function resizeImageToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new window.Image()
+      img.onload = () => {
+        const MAX = 300
+        const scale = Math.min(MAX / img.width, MAX / img.height, 1)
+        const canvas = document.createElement("canvas")
+        canvas.width = Math.round(img.width * scale)
+        canvas.height = Math.round(img.height * scale)
+        canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL("image/jpeg", 0.85))
+      }
+      img.onerror = reject
+      img.src = e.target?.result as string
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function NewMemberPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -32,6 +54,19 @@ export default function NewMemberPage() {
   const [hasEps, setHasEps] = useState(false)
   const [epsCustom, setEpsCustom] = useState(false)
   const [epsName, setEpsName] = useState("")
+  const [photoUrl, setPhotoUrl] = useState("")
+  const [memberName, setMemberName] = useState("")
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handlePhotoFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { setError("La imagen no puede superar 5 MB"); return }
+    try {
+      const dataUrl = await resizeImageToDataUrl(file)
+      setPhotoUrl(dataUrl)
+    } catch { setError("No se pudo procesar la imagen") }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -47,7 +82,7 @@ export default function NewMemberPage() {
         name: data.get("name") as string,
         email: data.get("email") as string || undefined,
         phone: data.get("phone") as string || undefined,
-        photoUrl: data.get("photoUrl") as string || undefined,
+        photoUrl: photoUrl || undefined,
         idType: data.get("idType") as string || undefined,
         idNumber: data.get("idNumber") as string || undefined,
         birthDate: birthDateStr ? new Date(birthDateStr) : undefined,
@@ -120,13 +155,38 @@ export default function NewMemberPage() {
                 />
               </div>
             </div>
+            {/* Foto del miembro */}
             <div className="space-y-2">
-              <Label htmlFor="photoUrl">Foto (URL)</Label>
-              <Input
-                id="photoUrl" name="photoUrl" type="url"
-                placeholder="https://ejemplo.com/foto.jpg"
-                className="min-h-[48px] text-base"
-              />
+              <Label>Foto del miembro (opcional)</Label>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="relative group flex-shrink-0 focus:outline-none"
+                >
+                  {photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={photoUrl} alt="preview" className="w-16 h-16 rounded-full object-cover border-2 border-gray-200" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+                      <User className="h-7 w-7 text-blue-400" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="h-5 w-5 text-white" />
+                  </div>
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoFile} />
+                <div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Haz clic para subir una foto</p>
+                  <p className="text-xs text-gray-400 mt-0.5">JPG, PNG — máx 5 MB</p>
+                  {photoUrl && (
+                    <button type="button" onClick={() => setPhotoUrl("")} className="text-xs text-red-500 hover:underline mt-0.5">
+                      Quitar foto
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

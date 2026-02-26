@@ -435,7 +435,7 @@ export function ReportsClient({
                 </div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{kpis.membresiasActivas}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Activas · <span className="text-red-500">{kpis.membresiasVencidas} vencidas</span>
+                  Activas · <span className="text-red-500">{kpis.membresiasVencidas} {kpis.membresiasVencidas === 1 ? "vencida" : "vencidas"}</span>
                 </p>
               </CardContent>
             </Card>
@@ -470,7 +470,7 @@ export function ReportsClient({
                   <BarChart data={ingresos} margin={{ top: 0, right: 4, left: -10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#6b7280" }} tickLine={false} axisLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#6b7280" }} tickLine={false} axisLine={false} tickFormatter={formatCOP} />
+                    <YAxis tick={{ fontSize: 11, fill: "#6b7280" }} tickLine={false} axisLine={false} tickFormatter={formatCOP} domain={[0, 'dataMax']} />
                     <Tooltip formatter={(v: number | undefined) => [formatCurrency(v ?? 0), "Ingresos"]} contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 12 }} />
                     <Bar dataKey="ingresos" radius={[6, 6, 0, 0]}>
                       {ingresos.map((_, i) => <Cell key={i} fill={BLUE_GYMFLOW} />)}
